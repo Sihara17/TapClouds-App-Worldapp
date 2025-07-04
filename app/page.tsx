@@ -141,14 +141,12 @@ export default function TapCloud() {
             <Home className="h-6 w-6" />
             <span className="text-xs">Home</span>
           </Button>
-          <Button
-            variant="ghost"
-            onClick={() => alert("Boost belum tersedia")}
-            className="flex flex-col items-center gap-1 text-gray-400"
-          >
-            <Zap className="h-6 w-6" />
-            <span className="text-xs">Boost</span>
-          </Button>
+          <Link href="/boost">
+          <Button variant="ghost" className="flex flex-col items-center gap-1 text-gray-400">
+           <Zap className="h-6 w-6" />
+           <span className="text-xs">Boost</span>
+           </Button>
+           </Link>
           <Button variant="ghost" className="flex flex-col items-center gap-1 text-gray-400">
             <Users className="h-6 w-6" />
             <span className="text-xs">Social</span>
