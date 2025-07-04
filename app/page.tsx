@@ -5,10 +5,13 @@ import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Home, Zap, Users, Target, MoreVertical, Sparkles, Gift, Settings } from "lucide-react"
 import Link from "next/link"
+import { useBoostStore } from "@/store/boostStore"
+
 
 export default function TapCloud() {
   const liffId = "2007685380-qx5MEZd9"
-
+  const { activeBoost } = useBoostStore()
+  
   const [points, setPoints] = useState(0) // mulai dari 0
   const [energy, setEnergy] = useState(900)
   const [maxEnergy] = useState(900)
@@ -51,7 +54,9 @@ export default function TapCloud() {
       setTapEffects((prev) => prev.filter((effect) => effect.id !== newEffect.id))
     }, 1000)
   }
-
+const pointsToAdd = activeBoost === "double" 
+  ? (Math.floor(Math.random() * 10) + 1) * 2
+  : Math.floor(Math.random() * 10) + 1
   useEffect(() => {
     const interval = setInterval(() => {
       setEnergy((prev) => Math.min(maxEnergy, prev + 1))
