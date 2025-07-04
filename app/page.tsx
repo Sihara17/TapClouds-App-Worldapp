@@ -147,10 +147,12 @@ export default function TapCloud() {
            <span className="text-xs">Boost</span>
            </Button>
            </Link>
-          <Button variant="ghost" className="flex flex-col items-center gap-1 text-gray-400">
-            <Target className="h-6 w-6" />
-            <span className="text-xs">Quest</span>
-          </Button>
+          <Link href="/quest">
+            <Button variant="ghost" className="flex flex-col items-center gap-1 text-cyan-400">
+              <Target className="h-6 w-6" />
+              <span className="text-xs">Quest</span>
+            </Button>
+           </Link>
         </div>
       </div>
 
