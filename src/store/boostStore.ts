@@ -1,16 +1,30 @@
-// src/store/boostStore.ts
 import { create } from "zustand"
 
-export type BoostType = "doublePoints" | "energyRegen" | null
-
-interface BoostStore {
-  boost: BoostType
-  setBoost: (type: BoostType) => void
-  resetBoost: () => void
+interface BoostState {
+  doublePointActive: boolean
+  energyRegenActive: boolean
+  doublePointDuration: number
+  energyRegenDuration: number
+  activateBoost: (type: "double" | "regen", durationInSeconds: number) => void
 }
 
-export const useBoostStore = create<BoostStore>((set) => ({
-  boost: null,
-  setBoost: (type) => set({ boost: type }),
-  resetBoost: () => set({ boost: null }),
+export const useBoostStore = create<BoostState>((set) => ({
+  doublePointActive: false,
+  energyRegenActive: false,
+  doublePointDuration: 0,
+  energyRegenDuration: 0,
+
+  activateBoost: (type, duration) => {
+    if (type === "double") {
+      set({ doublePointActive: true, doublePointDuration: duration })
+      setTimeout(() => {
+        set({ doublePointActive: false, doublePointDuration: 0 })
+      }, duration * 1000)
+    } else if (type === "regen") {
+      set({ energyRegenActive: true, energyRegenDuration: duration })
+      setTimeout(() => {
+        set({ energyRegenActive: false, energyRegenDuration: 0 })
+      }, duration * 1000)
+    }
+  }
 }))
