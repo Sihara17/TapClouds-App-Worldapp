@@ -148,10 +148,6 @@ export default function TapCloud() {
            </Button>
            </Link>
           <Button variant="ghost" className="flex flex-col items-center gap-1 text-gray-400">
-            <Users className="h-6 w-6" />
-            <span className="text-xs">Social</span>
-          </Button>
-          <Button variant="ghost" className="flex flex-col items-center gap-1 text-gray-400">
             <Target className="h-6 w-6" />
             <span className="text-xs">Quest</span>
           </Button>
@@ -166,7 +162,7 @@ export default function TapCloud() {
                 liff.default.login()
               })
             }}
-            className="bg-yellow-400 text-black hover:bg-yellow-500 rounded-full px-6 py-2"
+            className="bg-green-400 text-black hover:bg-yellow-500 rounded-full px-6 py-2"
           >
             Login with LINE
           </Button>
