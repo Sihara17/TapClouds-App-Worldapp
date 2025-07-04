@@ -81,10 +81,6 @@ export default function TapCloud() {
       <div className="text-center mb-6">
         <div className="flex items-center justify-center gap-2 mb-4">
           <span className="text-cyan-400 text-lg">@{userName || "..."}</span>
-          <div className="flex items-center gap-1 bg-yellow-500/20 px-2 py-1 rounded-full">
-            <div className="w-4 h-4 bg-yellow-500 rounded-full"></div>
-            <span className="text-sm">521</span>
-          </div>
         </div>
 
         <div className="flex items-center justify-center gap-3 mb-2">
@@ -145,12 +141,14 @@ export default function TapCloud() {
             <Home className="h-6 w-6" />
             <span className="text-xs">Home</span>
           </Button>
-          <Link href="/boost">
-            <Button variant="ghost" className="flex flex-col items-center gap-1 text-gray-400">
-              <Zap className="h-6 w-6" />
-              <span className="text-xs">Boost</span>
-            </Button>
-          </Link>
+          <Button
+            variant="ghost"
+            onClick={() => alert("Boost belum tersedia")}
+            className="flex flex-col items-center gap-1 text-gray-400"
+          >
+            <Zap className="h-6 w-6" />
+            <span className="text-xs">Boost</span>
+          </Button>
           <Button variant="ghost" className="flex flex-col items-center gap-1 text-gray-400">
             <Users className="h-6 w-6" />
             <span className="text-xs">Social</span>
