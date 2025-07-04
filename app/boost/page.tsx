@@ -66,10 +66,13 @@ export default function BoostPage() {
               <span className="text-xs">Boost</span>
             </Button>
           </Link>
+    
+          <Link href="/quest">
           <Button variant="ghost" className="flex flex-col items-center gap-1 text-gray-400">
             <Target className="h-6 w-6" />
             <span className="text-xs">Quest</span>
           </Button>
+          </Link>
         </div>
       </div>
     </div>
