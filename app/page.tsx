@@ -7,12 +7,11 @@ import { Home, Zap, Users, Target, MoreVertical, Sparkles, Gift, Settings } from
 import Link from "next/link"
 import { useBoostStore } from "@/store/boostStore"
 
-
 export default function TapCloud() {
   const liffId = "2007685380-qx5MEZd9"
   const { activeBoost } = useBoostStore()
-  
-  const [points, setPoints] = useState(0) // mulai dari 0
+
+  const [points, setPoints] = useState(0)
   const [energy, setEnergy] = useState(900)
   const [maxEnergy] = useState(900)
   const [isAnimating, setIsAnimating] = useState(false)
@@ -40,29 +39,33 @@ export default function TapCloud() {
 
   const handleTap = (event: React.MouseEvent<HTMLDivElement>) => {
     if (energy <= 0) return
+
     const rect = event.currentTarget.getBoundingClientRect()
     const x = event.clientX - rect.left
     const y = event.clientY - rect.top
-    const pointsToAdd = Math.floor(Math.random() * 5) + 1
+
+    const basePoints = Math.floor(Math.random() * 5) + 1
+    const pointsToAdd = activeBoost === "double" ? basePoints * 2 : basePoints
+
     setPoints((prev) => prev + pointsToAdd)
     setEnergy((prev) => Math.max(0, prev - 1))
     setIsAnimating(true)
+
     setTimeout(() => setIsAnimating(false), 200)
+
     const newEffect = { id: Date.now(), x, y }
     setTapEffects((prev) => [...prev, newEffect])
     setTimeout(() => {
       setTapEffects((prev) => prev.filter((effect) => effect.id !== newEffect.id))
     }, 1000)
   }
-const pointsToAdd = activeBoost === "double" 
-  ? (Math.floor(Math.random() * 10) + 1) * 2
-  : Math.floor(Math.random() * 10) + 1
+
   useEffect(() => {
     const interval = setInterval(() => {
       setEnergy((prev) => Math.min(maxEnergy, prev + 1))
-    }, 1000)
+    }, activeBoost === "energy" ? 500 : 1000)
     return () => clearInterval(interval)
-  }, [maxEnergy])
+  }, [activeBoost, maxEnergy])
 
   return (
     <div className="min-h-screen bg-cover bg-center bg-no-repeat text-blue-900 relative overflow-hidden" style={{ backgroundImage: "url('/bg-Cloud.png')" }}>
@@ -147,17 +150,17 @@ const pointsToAdd = activeBoost === "double"
             <span className="text-xs">Home</span>
           </Button>
           <Link href="/boost">
-          <Button variant="ghost" className="flex flex-col items-center gap-1 text-gray-400">
-           <Zap className="h-6 w-6" />
-           <span className="text-xs">Boost</span>
-           </Button>
-           </Link>
+            <Button variant="ghost" className="flex flex-col items-center gap-1 text-gray-400">
+              <Zap className="h-6 w-6" />
+              <span className="text-xs">Boost</span>
+            </Button>
+          </Link>
           <Link href="/quest">
             <Button variant="ghost" className="flex flex-col items-center gap-1 text-cyan-400">
               <Target className="h-6 w-6" />
               <span className="text-xs">Quest</span>
             </Button>
-           </Link>
+          </Link>
         </div>
       </div>
 
