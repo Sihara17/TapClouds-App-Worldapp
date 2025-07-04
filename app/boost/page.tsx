@@ -1,14 +1,14 @@
 "use client"
 
-import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Home, Zap, Users, Target } from "lucide-react"
 import Link from "next/link"
 import BoostCard from "@/components/BoostCard"
 import { useBoostStore } from "@/store/boostStore"
+import { useGameStats } from "@/store/gameStats"
 
 export default function BoostPage() {
-  const [points, setPoints] = useState(0) // Simulasi sementara, nanti ambil dari global state kalau sudah ada
+  const { points, setPoints } = useGameStats()
   const { activateBoost } = useBoostStore()
 
   const handleBoost = (type: "double" | "regen") => {
