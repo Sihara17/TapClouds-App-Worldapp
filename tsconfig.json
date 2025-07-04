@@ -18,8 +18,9 @@
         "name": "next"
       }
     ],
+    "baseUrl": ".",                      // pastikan ini ada
     "paths": {
-      "@/*": ["/*"]
+      "@/*": ["components/*", "app/*"]   // sesuaikan dengan struktur project kamu
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
