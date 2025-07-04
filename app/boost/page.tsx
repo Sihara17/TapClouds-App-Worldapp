@@ -1,7 +1,9 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import { Home, Zap, Users, Target } from "lucide-react"
 import Link from "next/link"
-
+import BoostCard from "@/components/BoostCard"
 
 export default function BoostPage() {
   const handleBoost = (boostName: string) => {
@@ -9,49 +11,36 @@ export default function BoostPage() {
   }
 
   return (
-    <div className="min-h-screen bg-cover bg-center bg-no-repeat text-blue-900 p-6" style={{ backgroundImage: "url('/bg-Cloud.png')" }}>
-      <h1 className="text-2xl font-bold mb-4">Boost Center</h1>
+    <div className="min-h-screen bg-cover bg-center bg-no-repeat text-blue-900 relative pb-20" style={{ backgroundImage: "url('/bg-Cloud.png')" }}>
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-cyan-900/20 via-transparent to-transparent z-0"></div>
 
-      <div className="grid gap-4">
-        <BoostCard
-          title="Double Points"
-          description="Dapatkan 2x poin selama 10 menit."
-          onBoost={() => handleBoost("Double Points")}
-        />
+      <div className="relative z-10 p-6 pt-20">
+        <h1 className="text-3xl font-bold mb-6 text-center">Boost Center</h1>
 
-        <BoostCard
-          title="Energy Regen x2"
-          description="Regenerasi energi dua kali lebih cepat selama 15 menit."
-          onBoost={() => handleBoost("Energy Regen x2")}
-        />
+        <div className="grid gap-4">
+          <BoostCard
+            title="Double Points"
+            description="Dapatkan 2x poin selama 10 menit."
+            onBoost={() => handleBoost("Double Points")}
+          />
 
-        <BoostCard
-          title="Auto Tap"
-          description="Otomatis tap cloud selama 1 menit."
-          onBoost={() => handleBoost("Auto Tap")}
-          disabled
-        />
-      </div>
-    </div>
+          <BoostCard
+            title="Energy Regen x2"
+            description="Regenerasi energi dua kali lebih cepat selama 15 menit."
+            onBoost={() => handleBoost("Energy Regen x2")}
+          />
 
-    "use client"
-
-import { Button } from "@/components/ui/button"
-import { Home, Zap, Users, Target } from "lucide-react"
-import Link from "next/link"
-
-export default function BoostPage() {
-  return (
-    <div className="min-h-screen bg-cover bg-center bg-no-repeat text-white relative" style={{ backgroundImage: "url('/bg-Cloud.png')" }}>
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-cyan-900/20 via-transparent to-transparent"></div>
-
-      <div className="p-6 pt-20 text-center text-blue-900">
-        <h1 className="text-3xl font-bold mb-4">Boost</h1>
-        <p className="text-lg">Boost belum tersedia. Fitur ini akan segera hadir!</p>
+          <BoostCard
+            title="Auto Tap"
+            description="Otomatis tap cloud selama 1 menit."
+            onBoost={() => handleBoost("Auto Tap")}
+            disabled
+          />
+        </div>
       </div>
 
-      {/* Footer Navigation Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur-sm border-t border-gray-700">
+      {/* Bottom Navigation Bar */}
+      <div className="fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur-sm border-t border-gray-700 z-20">
         <div className="flex items-center justify-around py-3">
           <Link href="/">
             <Button variant="ghost" className="flex flex-col items-center gap-1 text-gray-400">
@@ -78,4 +67,3 @@ export default function BoostPage() {
     </div>
   )
 }
-
