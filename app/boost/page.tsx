@@ -1,13 +1,25 @@
 "use client"
 
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Home, Zap, Users, Target } from "lucide-react"
 import Link from "next/link"
 import BoostCard from "@/components/BoostCard"
+import { useBoostStore } from "@/store/boostStore"
 
 export default function BoostPage() {
-  const handleBoost = (boostName: string) => {
-    alert(`Boost activated: ${boostName}`)
+  const [points, setPoints] = useState(0) // Simulasi sementara, nanti ambil dari global state kalau sudah ada
+  const { activateBoost } = useBoostStore()
+
+  const handleBoost = (type: "double" | "regen") => {
+    if (points < 5000) {
+      alert("Kamu butuh minimal 5000 point untuk aktivasi boost ini.")
+      return
+    }
+
+    setPoints(points - 5000)
+    activateBoost(type, type === "double" ? 60 : 90)
+    alert(`${type === "double" ? "Double Points" : "Regen x2"} diaktifkan!`)
   }
 
   return (
@@ -20,20 +32,20 @@ export default function BoostPage() {
         <div className="grid gap-4">
           <BoostCard
             title="Double Points"
-            description="Dapatkan 2x poin selama 10 menit."
-            onBoost={() => handleBoost("Double Points")}
+            description="Dapatkan 2x poin selama 1 menit."
+            onBoost={() => handleBoost("double")}
           />
 
           <BoostCard
             title="Energy Regen x2"
-            description="Regenerasi energi dua kali lebih cepat selama 15 menit."
-            onBoost={() => handleBoost("Energy Regen x2")}
+            description="Regenerasi energi dua kali lebih cepat selama 1.5 menit."
+            onBoost={() => handleBoost("regen")}
           />
 
           <BoostCard
             title="Auto Tap"
             description="Otomatis tap cloud selama 1 menit."
-            onBoost={() => handleBoost("Auto Tap")}
+            onBoost={() => alert("Auto Tap belum tersedia.")}
             disabled
           />
         </div>
