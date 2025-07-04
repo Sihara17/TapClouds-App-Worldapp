@@ -1,16 +1,14 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
-import { Home, Zap, Users, Target, X, MoreVertical, Sparkles, Gift, Settings } from "lucide-react"
+import { Home, Zap, Users, Target, MoreVertical, Sparkles, Gift, Settings } from "lucide-react"
 
 export default function TapCloud() {
   const liffId = "2007685380-qx5MEZd9"
 
   const [points, setPoints] = useState(108713386)
-  const [seasonPoints, setSeasonPoints] = useState(2610)
   const [energy, setEnergy] = useState(900)
   const [maxEnergy] = useState(900)
   const [isAnimating, setIsAnimating] = useState(false)
@@ -45,7 +43,6 @@ export default function TapCloud() {
     const y = event.clientY - rect.top
     const pointsToAdd = Math.floor(Math.random() * 10) + 1
     setPoints((prev) => prev + pointsToAdd)
-    setSeasonPoints((prev) => prev + pointsToAdd)
     setEnergy((prev) => Math.max(0, prev - 1))
     setIsAnimating(true)
     setTimeout(() => setIsAnimating(false), 200)
@@ -69,17 +66,13 @@ export default function TapCloud() {
 
       {/* Top Bar */}
       <div className="flex items-center justify-between p-4 relative z-10">
-        <Button variant="ghost" size="icon" className="text-white">
-          <X className="h-6 w-6" />
-        </Button>
-
+        <div className="w-8 h-8" />
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-full overflow-hidden">
             <img src="/logo.png" alt="Logo" className="w-full h-full object-cover" />
           </div>
           <span className="font-semibold">TapCloud</span>
         </div>
-
         <Button variant="ghost" size="icon" className="text-white">
           <MoreVertical className="h-6 w-6" />
         </Button>
@@ -102,11 +95,6 @@ export default function TapCloud() {
           <span className="text-4xl md:text-5xl font-bold">{points.toLocaleString()}</span>
         </div>
 
-        <div className="mb-6">
-          <p className="text-gray-300 mb-1">Season 1 Final Point</p>
-          <p className="text-2xl font-bold">{seasonPoints.toLocaleString()}</p>
-        </div>
-
         <div className="flex justify-center gap-4 mb-8">
           <Button size="icon" className="w-12 h-12 bg-cyan-500 hover:bg-cyan-600 rounded-full">
             <Sparkles className="h-6 w-6" />
@@ -123,23 +111,17 @@ export default function TapCloud() {
       {/* Tap Area */}
       <div className="flex justify-center mb-8 relative">
         <div
-          className={`relative cursor-pointer transition-transform duration-200 ${
-            isAnimating ? "scale-95" : "scale-100"
-          }`}
+          className={`relative cursor-pointer transition-transform duration-200 ${isAnimating ? "scale-95" : "scale-100"}`}
           onClick={handleTap}
         >
           <div className="w-64 h-64 relative overflow-hidden rounded-full shadow-2xl shadow-cyan-500/50">
-            <img
-              src="/logo.png"
-              alt="TapCloud Logo"
-              className="w-full h-full object-contain rounded-full"
-            />
+            <img src="/logo.png" alt="TapCloud Logo" className="w-full h-full object-contain rounded-full" />
           </div>
 
           {tapEffects.map((effect) => (
             <div
               key={effect.id}
-              className="absolute pointer-events-none animate-ping"
+              className="absolute pointer-events-none animate-bounce"
               style={{ left: effect.x - 10, top: effect.y - 10 }}
             >
               <div className="w-5 h-5 bg-yellow-400 rounded-full opacity-75"></div>
@@ -181,7 +163,7 @@ export default function TapCloud() {
 
       {!isLoggedIn && (
         <div className="fixed top-4 right-4 bg-yellow-500 text-black px-3 py-1 rounded-full text-sm">
-          Logging in...
+          Connecting to TapCloud...
         </div>
       )}
     </div>
