@@ -40,7 +40,7 @@ export default function TapCloud() {
     const rect = event.currentTarget.getBoundingClientRect()
     const x = event.clientX - rect.left
     const y = event.clientY - rect.top
-    const pointsToAdd = Math.floor(Math.random() * 10) + 1
+    const pointsToAdd = Math.floor(Math.random() * 5) + 1
     setPoints((prev) => prev + pointsToAdd)
     setEnergy((prev) => Math.max(0, prev - 1))
     setIsAnimating(true)
