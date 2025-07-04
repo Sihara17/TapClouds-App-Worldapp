@@ -55,10 +55,6 @@ export default function BoostPage() {
             </Button>
           </Link>
           <Button variant="ghost" className="flex flex-col items-center gap-1 text-gray-400">
-            <Users className="h-6 w-6" />
-            <span className="text-xs">Social</span>
-          </Button>
-          <Button variant="ghost" className="flex flex-col items-center gap-1 text-gray-400">
             <Target className="h-6 w-6" />
             <span className="text-xs">Quest</span>
           </Button>
