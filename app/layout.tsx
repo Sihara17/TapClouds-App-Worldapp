@@ -7,10 +7,10 @@ import Script from "next/script"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Human Tap - LIFF App",
+  title: "TapClouds - App",
   description: "Tap to earn points in this engaging clicker game",
   viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
-    generator: 'v0.dev'
+    generator: 'Sihara'
 }
 
 export default function RootLayout({
