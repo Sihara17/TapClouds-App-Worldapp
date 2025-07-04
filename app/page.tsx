@@ -119,39 +119,34 @@ export default function TapCloud() {
       </div>
 
       <div className="flex justify-center mb-8 relative">
-        <div
-          className={`relative cursor-pointer transition-transform duration-200 ${
-            isAnimating ? "scale-95" : "scale-100"
-          }`}
-          onClick={handleTap}
-        >
-          <div className="w-64 h-64 bg-gradient-to-br from-cyan-400 via-cyan-500 to-blue-600 rounded-full flex items-center justify-center shadow-2xl shadow-cyan-500/50 relative overflow-hidden">
-            <div className="absolute top-8 left-12 w-6 h-6 bg-white/30 rounded-full"></div>
-            <div className="absolute top-16 right-8 w-4 h-4 bg-white/20 rounded-full"></div>
-            <div className="absolute bottom-12 left-8 w-8 h-8 bg-white/25 rounded-full"></div>
-            <div className="absolute bottom-8 right-12 w-3 h-3 bg-white/30 rounded-full"></div>
-            <div className="absolute bottom-16 right-16 w-2 h-2 bg-white/40 rounded-full"></div>
+  <div
+    className={`relative cursor-pointer transition-transform duration-200 ${
+      isAnimating ? "scale-95" : "scale-100"
+    }`}
+    onClick={handleTap}
+  >
+    {/* Gambar logo.png sebagai tombol tap */}
+    <div className="w-64 h-64 relative overflow-hidden rounded-full shadow-2xl shadow-cyan-500/50">
+      <img
+        src="/logo.png"
+        alt="TapCloud Logo"
+        className="w-full h-full object-contain rounded-full"
+      />
+    </div>
 
-            <div className="relative z-10">
-              <div className="flex gap-8 mb-4">
-                <div className="w-4 h-4 bg-black rounded-full"></div>
-                <div className="w-4 h-4 bg-black rounded-full"></div>
-              </div>
-              <div className="w-12 h-6 border-b-4 border-black rounded-full"></div>
-            </div>
-          </div>
-
-          {tapEffects.map((effect) => (
-            <div
-              key={effect.id}
-              className="absolute pointer-events-none animate-ping"
-              style={{ left: effect.x - 10, top: effect.y - 10 }}
-            >
-              <div className="w-5 h-5 bg-yellow-400 rounded-full opacity-75"></div>
-            </div>
-          ))}
-        </div>
+    {/* Tap Effects */}
+    {tapEffects.map((effect) => (
+      <div
+        key={effect.id}
+        className="absolute pointer-events-none animate-ping"
+        style={{ left: effect.x - 10, top: effect.y - 10 }}
+      >
+        <div className="w-5 h-5 bg-yellow-400 rounded-full opacity-75"></div>
       </div>
+    ))}
+  </div>
+</div>
+
 
       <div className="px-6 mb-6">
         <div className="flex items-center justify-between mb-2">
