@@ -64,8 +64,8 @@ export default function TapCloud() {
   }, [maxEnergy])
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 text-white relative overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-cyan-900/20 via-transparent to-transparent"></div>
+<div className="min-h-screen bg-cover bg-center bg-no-repeat text-white relative overflow-hidden" style={{ backgroundImage: "url('/bg-Cloud.png')" }}>
+ <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-cyan-900/20 via-transparent to-transparent"></div>
 
       <div className="flex items-center justify-between p-4 relative z-10">
         <Button variant="ghost" size="icon" className="text-white">
