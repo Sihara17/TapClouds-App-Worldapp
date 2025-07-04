@@ -47,7 +47,7 @@ export default function QuestPage() {
       {/* Bottom Navigation */}
       <div className="fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur-sm border-t border-gray-700">
         <div className="flex items-center justify-around py-3">
-          <Link href="/">
+          <Link href="/page">
             <Button variant="ghost" className="flex flex-col items-center gap-1 text-gray-400">
               <Home className="h-6 w-6" />
               <span className="text-xs">Home</span>
@@ -59,10 +59,7 @@ export default function QuestPage() {
               <span className="text-xs">Boost</span>
             </Button>
           </Link>
-          <Button variant="ghost" className="flex flex-col items-center gap-1 text-gray-400">
-            <Users className="h-6 w-6" />
-            <span className="text-xs">Social</span>
-          </Button>
+          
           <Link href="/quest">
             <Button variant="ghost" className="flex flex-col items-center gap-1 text-cyan-400">
               <Target className="h-6 w-6" />
