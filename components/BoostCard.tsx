@@ -1,47 +1,35 @@
-import { Button } from "@/components/ui/button"
-import { useState } from "react"
+"use client"
 
-interface BoostCardProps {
+import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import { Sparkles } from "lucide-react"
+
+type BoostCardProps = {
   title: string
   description: string
-  cost: number
-  duration: number // in seconds
-  onActivate: (boost: string, duration: number, cost: number) => void
-  disabled: boolean
+  onBoost: () => void
+  disabled?: boolean
 }
 
-export default function BoostCard({
-  title,
-  description,
-  cost,
-  duration,
-  onActivate,
-  disabled,
-}: BoostCardProps) {
-  const [isLoading, setIsLoading] = useState(false)
-
-  const handleClick = () => {
-    setIsLoading(true)
-    setTimeout(() => {
-      onActivate(title, duration, cost)
-      setIsLoading(false)
-    }, 300) // Simulate delay
-  }
-
+export default function BoostCard({ title, description, onBoost, disabled = false }: BoostCardProps) {
   return (
-    <div className="bg-gradient-to-r from-blue-800 to-cyan-600 text-white p-4 rounded-xl shadow-lg space-y-2">
-      <h3 className="text-xl font-semibold">{title}</h3>
-      <p className="text-sm text-blue-100">{description}</p>
-      <div className="flex justify-between items-center pt-2">
-        <span className="text-yellow-300 font-bold">{cost} TCL</span>
+    <Card className="bg-white/80 backdrop-blur-md p-4 rounded-2xl shadow-md">
+      <div className="flex items-start justify-between">
+        <div>
+          <h2 className="text-lg font-semibold text-blue-900">{title}</h2>
+          <p className="text-sm text-gray-600">{description}</p>
+        </div>
+        <Sparkles className="text-cyan-500 w-6 h-6" />
+      </div>
+      <div className="mt-4 flex justify-end">
         <Button
-          onClick={handleClick}
-          disabled={disabled || isLoading}
-          className="bg-yellow-400 text-black hover:bg-yellow-300"
+          onClick={onBoost}
+          disabled={disabled}
+          className="bg-cyan-500 hover:bg-cyan-600 text-white rounded-full px-4"
         >
-          {isLoading ? "Activating..." : "Activate"}
+          {disabled ? "Coming Soon" : "Activate"}
         </Button>
       </div>
-    </div>
+    </Card>
   )
 }
