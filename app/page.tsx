@@ -6,11 +6,10 @@ import { Progress } from "@/components/ui/progress"
 import { Home, Zap, Users, Target, MoreVertical, Sparkles, Gift, Settings } from "lucide-react"
 import Link from "next/link"
 
-
 export default function TapCloud() {
   const liffId = "2007685380-qx5MEZd9"
 
-  const [points, setPoints] = useState(108713386)
+  const [points, setPoints] = useState(0) // mulai dari 0
   const [energy, setEnergy] = useState(900)
   const [maxEnergy] = useState(900)
   const [isAnimating, setIsAnimating] = useState(false)
@@ -23,9 +22,7 @@ export default function TapCloud() {
       liff.default
         .init({ liffId })
         .then(() => {
-          if (!liff.default.isLoggedIn()) {
-            liff.default.login()
-          } else {
+          if (liff.default.isLoggedIn()) {
             setIsLoggedIn(true)
             liff.default.getProfile().then((profile: any) => {
               setUserName(profile.displayName)
@@ -149,10 +146,10 @@ export default function TapCloud() {
             <span className="text-xs">Home</span>
           </Button>
           <Link href="/boost">
-         <Button variant="ghost" className="flex flex-col items-center gap-1 text-gray-400">
-         <Zap className="h-6 w-6" />
-         <span className="text-xs">Boost</span>
-         </Button>
+            <Button variant="ghost" className="flex flex-col items-center gap-1 text-gray-400">
+              <Zap className="h-6 w-6" />
+              <span className="text-xs">Boost</span>
+            </Button>
           </Link>
           <Button variant="ghost" className="flex flex-col items-center gap-1 text-gray-400">
             <Users className="h-6 w-6" />
@@ -166,8 +163,17 @@ export default function TapCloud() {
       </div>
 
       {!isLoggedIn && (
-        <div className="fixed top-4 right-4 bg-yellow-500 text-black px-3 py-1 rounded-full text-sm">
-          Connecting to TapCloud...
+        <div className="fixed bottom-16 left-0 right-0 flex justify-center">
+          <Button
+            onClick={() => {
+              import("@line/liff").then((liff) => {
+                liff.default.login()
+              })
+            }}
+            className="bg-yellow-400 text-black hover:bg-yellow-500 rounded-full px-6 py-2"
+          >
+            Login with LINE
+          </Button>
         </div>
       )}
     </div>
