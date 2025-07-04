@@ -61,7 +61,7 @@ export default function TapCloud() {
   }, [maxEnergy])
 
   return (
-    <div className="min-h-screen bg-cover bg-center bg-no-repeat text-white relative overflow-hidden" style={{ backgroundImage: "url('/bg-Cloud.png')" }}>
+    <div className="min-h-screen bg-cover bg-center bg-no-repeat text-blue-900 relative overflow-hidden" style={{ backgroundImage: "url('/bg-Cloud.png')" }}>
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-cyan-900/20 via-transparent to-transparent"></div>
 
       {/* Top Bar */}
@@ -73,7 +73,7 @@ export default function TapCloud() {
           </div>
           <span className="font-semibold">TapCloud</span>
         </div>
-        <Button variant="ghost" size="icon" className="text-white">
+        <Button variant="ghost" size="icon" className="text-blue-900">
           <MoreVertical className="h-6 w-6" />
         </Button>
       </div>
@@ -92,7 +92,7 @@ export default function TapCloud() {
           <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg shadow-yellow-500/50">
             <div className="w-8 h-8 bg-gradient-to-br from-yellow-300 to-yellow-600 rounded-full"></div>
           </div>
-          <span className="text-4xl md:text-5xl font-bold">{points.toLocaleString()}</span>
+          <span className="text-4xl md:text-5xl font-bold text-blue-900">{points.toLocaleString()}</span>
         </div>
 
         <div className="flex justify-center gap-4 mb-8">
@@ -133,8 +133,8 @@ export default function TapCloud() {
       {/* Energy */}
       <div className="px-6 mb-6">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm text-gray-300">Energy</span>
-          <span className="text-sm font-semibold">{energy} / {maxEnergy}</span>
+          <span className="text-sm text-blue-900">Energy</span>
+          <span className="text-sm font-semibold text-blue-900">{energy} / {maxEnergy}</span>
         </div>
         <Progress value={(energy / maxEnergy) * 100} className="h-2" />
       </div>
