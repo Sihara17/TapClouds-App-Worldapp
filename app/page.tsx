@@ -7,23 +7,20 @@ import { Home, Zap, Target, MoreVertical, Sparkles, Gift, Settings } from "lucid
 import Link from "next/link"
 import { useBoostStore } from "@/store/boostStore"
 import { useGameStats } from "@/store/gameStats"
+import { useEnergyStore } from "@/store/energyStore"
 
 export default function TapCloud() {
   const liffId = "2007685380-qx5MEZd9"
 
-  const {
-    points,
-    setPoints,
-    energy,
-    setEnergy,
-    maxEnergy,
-  } = useGameStats()
-
+  const { points, setPoints, gainPoints } = useGameStats()
+  const { maxEnergy, refreshMaxEnergy } = useEnergyStore()
   const {
     doublePointActive,
-    energyRegenActive
+    energyRegenActive,
+    levels,
   } = useBoostStore()
 
+  const [energy, setEnergy] = useState(maxEnergy)
   const [isAnimating, setIsAnimating] = useState(false)
   const [tapEffects, setTapEffects] = useState<Array<{ id: number; x: number; y: number }>>([])
   const [userName, setUserName] = useState("")
@@ -43,6 +40,15 @@ export default function TapCloud() {
     })
   }, [])
 
+  // Auto point (based on auto boost)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const autoPoints = levels.auto * 0.01
+      gainPoints(autoPoints)
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [levels.auto])
+
   // Handle tap
   const handleTap = (event: React.MouseEvent<HTMLDivElement>) => {
     if (energy <= 0) return
@@ -54,8 +60,8 @@ export default function TapCloud() {
     const basePoints = Math.floor(Math.random() * 5) + 1
     const finalPoints = doublePointActive ? basePoints * 2 : basePoints
 
-    setPoints(points + finalPoints)
-    setEnergy(Math.max(0, energy - 1))
+    gainPoints(finalPoints)
+    setEnergy((prev) => Math.max(0, prev - 1))
     setIsAnimating(true)
 
     const newEffect = { id: Date.now(), x, y }
@@ -70,7 +76,12 @@ export default function TapCloud() {
       setEnergy((prev) => Math.min(maxEnergy, prev + 1))
     }, energyRegenActive ? 500 : 1000)
     return () => clearInterval(interval)
-  }, [energyRegenActive, maxEnergy, setEnergy])
+  }, [energyRegenActive, maxEnergy])
+
+  // Update maxEnergy if energyPerDay level changes
+  useEffect(() => {
+    refreshMaxEnergy()
+  }, [levels.energyPerDay])
 
   const safeEnergy = typeof energy === "number" && !isNaN(energy) ? energy : maxEnergy
 
