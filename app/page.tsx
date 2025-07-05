@@ -7,7 +7,6 @@ import { Home, Zap, Target, MoreVertical, Sparkles, Gift, Settings } from "lucid
 import Link from "next/link"
 import { useBoostStore } from "@/store/boostStore"
 import { useGameStats } from "@/store/gameStats"
-import { toast } from "sonner"
 
 export default function TapCloud() {
   const liffId = "2007685380-qx5MEZd9"
@@ -37,33 +36,8 @@ export default function TapCloud() {
         if (liff.default.isLoggedIn()) {
           setIsLoggedIn(true)
           liff.default.getProfile().then((profile) => {
-  setUserName(profile.displayName)
-
-  // 🗓️ Daily login reward logic
-  const today = new Date().toDateString()
-  const lastLogin = localStorage.getItem("lastLoginDate")
-  let streak = Number(localStorage.getItem("loginStreak") || "0")
-
-  if (lastLogin !== today) {
-  streak = lastLogin ? (streak >= 7 ? 1 : streak + 1) : 1
-  const reward = streak * 100
-
-  setPoints((prev) => prev + reward)
-  localStorage.setItem("lastLoginDate", today)
-  localStorage.setItem("loginStreak", streak.toString())
-
-  toast.success(`🎉 Daily Login: Hari ke-${streak}`, {
-    description: `+${reward} points`,
-    duration: 4000,
-    className: "text-blue-800 bg-blue-100 border border-blue-300 shadow-xl",
-    style: {
-      borderRadius: "12px",
-      fontWeight: "500",
-    }
-  })
-}
-
-
+            setUserName(profile.displayName)
+          })
         }
       }).catch((err) => console.error("LIFF init error:", err))
     })
@@ -93,10 +67,7 @@ export default function TapCloud() {
   // Regen energy
   useEffect(() => {
     const interval = setInterval(() => {
-      setEnergy((prevEnergy) => {
-        const next = Math.min(maxEnergy, prevEnergy + 1)
-        return next
-      })
+      setEnergy((prev) => Math.min(maxEnergy, prev + 1))
     }, energyRegenActive ? 500 : 1000)
     return () => clearInterval(interval)
   }, [energyRegenActive, maxEnergy, setEnergy])
