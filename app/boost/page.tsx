@@ -9,19 +9,19 @@ const boostItems = [
     id: "auto",
     title: "Auto Points",
     unit: "per sec",
-    valuePerLevel: 0.01,
+    valuePerLevel: 0.01
   },
   {
     id: "energyPerDay",
     title: "Energy Per Day",
     unit: "max/day",
-    valuePerLevel: 100,
+    valuePerLevel: 100
   },
   {
     id: "click",
     title: "Points Per Click",
     unit: "per click",
-    valuePerLevel: 0.1,
+    valuePerLevel: 0.1
   }
 ]
 
@@ -31,10 +31,7 @@ export default function BoostPage() {
 
   const handleUpgrade = (type: string) => {
     const cost = 5000
-    if (points < cost) {
-      alert("Need 5000 points")
-      return
-    }
+    if (points < cost) return
     setPoints(points - cost)
     upgradeBoost(type as any)
   }
@@ -47,6 +44,9 @@ export default function BoostPage() {
         const level = levels[item.id as keyof typeof levels]
         const current = (level - 1) * item.valuePerLevel
         const next = level * item.valuePerLevel
+        const cost = 5000
+        const canUpgrade = points >= cost
+
         return (
           <div key={item.id} className="bg-gray-800 rounded-xl p-4 shadow-md border border-cyan-600">
             <div className="flex justify-between items-center">
@@ -60,6 +60,7 @@ export default function BoostPage() {
                 <Button
                   onClick={() => handleUpgrade(item.id)}
                   className="bg-cyan-600 hover:bg-cyan-500"
+                  disabled={!canUpgrade}
                 >
                   Upgrade (5000 pts)
                 </Button>
