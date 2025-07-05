@@ -17,7 +17,7 @@ export default function QuestPage() {
       </h1>
 
       <div className="z-10 relative text-center text-gray-500 italic">
-        Belum ada quest hari ini.
+        coming Soon ....
       </div>
 
       {/* Bottom Navigation */}
