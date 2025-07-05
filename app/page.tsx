@@ -36,8 +36,26 @@ export default function TapCloud() {
         if (liff.default.isLoggedIn()) {
           setIsLoggedIn(true)
           liff.default.getProfile().then((profile) => {
-            setUserName(profile.displayName)
-          })
+  setUserName(profile.displayName)
+
+  // 🗓️ Daily login reward logic
+  const today = new Date().toDateString()
+  const lastLogin = localStorage.getItem("lastLoginDate")
+  let streak = Number(localStorage.getItem("loginStreak") || "0")
+
+  if (lastLogin !== today) {
+    // Belum login hari ini
+    streak = lastLogin ? (streak >= 7 ? 1 : streak + 1) : 1
+    const reward = streak * 100
+
+    setPoints((prev) => prev + reward)
+    localStorage.setItem("lastLoginDate", today)
+    localStorage.setItem("loginStreak", streak.toString())
+
+    alert(`🎉 Daily Login: Hari ke-${streak}!\n+${reward} points!`)
+  }
+})
+
         }
       }).catch((err) => console.error("LIFF init error:", err))
     })
