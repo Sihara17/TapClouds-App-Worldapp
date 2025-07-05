@@ -1,20 +1,23 @@
+// src/store/energyStore.ts
 import { create } from "zustand"
-import { useBoostStore } from "./boostStore"
 
-type EnergyStore = {
+type EnergyState = {
+  energy: number
   maxEnergy: number
+  setEnergy: (value: number) => void
   refreshMaxEnergy: () => void
 }
 
-export const useEnergyStore = create<EnergyStore>((set) => ({
-  maxEnergy: getEnergyFromBoost(),
-
+export const useEnergyStore = create<EnergyState>((set, get) => ({
+  energy: 200,
+  maxEnergy: 200,
+  setEnergy: (value) => set({ energy: value }),
   refreshMaxEnergy: () => {
-    set({ maxEnergy: getEnergyFromBoost() })
+    const level = /* ambil level dari boostStore, misalnya dari localStorage atau props */
+      typeof window !== "undefined"
+        ? parseInt(localStorage.getItem("boostLevel-energyPerDay") || "1")
+        : 1
+    const newMax = 200 + (level - 1) * 100
+    set({ maxEnergy: newMax })
   },
 }))
-
-function getEnergyFromBoost() {
-  const level = useBoostStore.getState().levels.energyPerDay
-  return 200 + (level - 1) * 100
-}
