@@ -14,5 +14,6 @@ export const useGameStats = create<GameStats>((set) => ({
   energy: 900, // ✅ pastikan default 900
   maxEnergy: 900,
   setPoints: (pts) => set({ points: pts }),
-  setEnergy: (energy) => set({ energy }),
+  setEnergy: (value) => set((state) => ({ energy: typeof value === "function" ? value(state.energy) : value })),
+
 }))
