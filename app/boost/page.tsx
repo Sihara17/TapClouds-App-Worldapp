@@ -1,4 +1,6 @@
-import { useBoostStore } from "@/store/boostStore"
+"use client"
+
+ import { useBoostStore } from "@/store/boostStore"
 import { useGameStats } from "@/store/gameStats"
 import { Button } from "@/components/ui/button"
 import { Home, Zap, Target } from "lucide-react"
