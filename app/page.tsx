@@ -3,17 +3,16 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
-import { Home, Zap, Users, Target, MoreVertical, Sparkles, Gift, Settings } from "lucide-react"
+import { Home, Zap, Target, MoreVertical, Sparkles, Gift, Settings } from "lucide-react"
 import Link from "next/link"
-import { useBoostStore } from '@/store/boostStore'
-import { useGameStats } from '@/store/gameStats'
-  
+import { useBoostStore } from "@/store/boostStore"
+import { useGameStats } from "@/store/gameStats"
+
 export default function TapCloud() {
   const liffId = "2007685380-qx5MEZd9"
   const { activeBoost } = useBoostStore()
+  const { points, energy, addPoints, setEnergy } = useGameStats()
 
-  const [points, setPoints] = useState(0)
-  const [energy, setEnergy] = useState(900)
   const [maxEnergy] = useState(900)
   const [isAnimating, setIsAnimating] = useState(false)
   const [tapEffects, setTapEffects] = useState<Array<{ id: number; x: number; y: number }>>([])
@@ -48,8 +47,8 @@ export default function TapCloud() {
     const basePoints = Math.floor(Math.random() * 5) + 1
     const pointsToAdd = activeBoost === "double" ? basePoints * 2 : basePoints
 
-    setPoints((prev) => prev + pointsToAdd)
-    setEnergy((prev) => Math.max(0, prev - 1))
+    addPoints(pointsToAdd)
+    setEnergy(Math.max(0, energy - 1))
     setIsAnimating(true)
 
     setTimeout(() => setIsAnimating(false), 200)
@@ -66,7 +65,7 @@ export default function TapCloud() {
       setEnergy((prev) => Math.min(maxEnergy, prev + 1))
     }, activeBoost === "energy" ? 500 : 1000)
     return () => clearInterval(interval)
-  }, [activeBoost, maxEnergy])
+  }, [activeBoost, maxEnergy, setEnergy])
 
   return (
     <div className="min-h-screen bg-cover bg-center bg-no-repeat text-blue-900 relative overflow-hidden" style={{ backgroundImage: "url('/bg-Cloud.png')" }}>
