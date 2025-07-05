@@ -1,17 +1,34 @@
 import { create } from "zustand"
+import { persist } from "zustand/middleware"
+
+export type BoostType = "auto" | "click" | "energyPerDay"
 
 interface BoostState {
-  activeBoost: "none" | "double" | "energy"
-  activateBoost: (type: "double" | "energy", duration: number) => void
+  levels: Record<BoostType, number>
+  upgradeBoost: (type: BoostType) => void
 }
 
-export const useBoostStore = create<BoostState>((set) => ({
-  activeBoost: "none",
-  activateBoost: (type, duration) => {
-    set({ activeBoost: type })
+export const useBoostStore = create<BoostState>()(
+  persist(
+    (set, get) => ({
+      levels: {
+        auto: 1,
+        click: 1,
+        energyPerDay: 1,
+      },
+      upgradeBoost: (type) => {
+        const { levels } = get()
+        const currentLevel = levels[type]
+        if (currentLevel >= 50) return
 
-    setTimeout(() => {
-      set({ activeBoost: "none" })
-    }, duration * 1000)
-  },
-}))
+        set((state) => ({
+          levels: {
+            ...state.levels,
+            [type]: currentLevel + 1,
+          },
+        }))
+      },
+    }),
+    { name: "boost-level-store" }
+  )
+)
