@@ -16,7 +16,6 @@ export default function TapCloud() {
   const { maxEnergy, refreshMaxEnergy } = useEnergyStore()
   const {
     doublePointActive,
-    energyRegenActive,
     levels,
   } = useBoostStore()
 
@@ -70,13 +69,20 @@ export default function TapCloud() {
     setTimeout(() => setIsAnimating(false), 200)
   }
 
-  // Regen energy
+  // Reset energy to max every 00:00
   useEffect(() => {
-    const interval = setInterval(() => {
-      setEnergy((prev) => Math.min(maxEnergy, prev + 1))
-    }, energyRegenActive ? 500 : 1000)
+    const checkReset = () => {
+      const lastReset = localStorage.getItem("lastEnergyReset")
+      const today = new Date().toDateString()
+      if (lastReset !== today) {
+        setEnergy(maxEnergy)
+        localStorage.setItem("lastEnergyReset", today)
+      }
+    }
+    checkReset()
+    const interval = setInterval(checkReset, 60000) // check every 1 minute
     return () => clearInterval(interval)
-  }, [energyRegenActive, maxEnergy])
+  }, [maxEnergy])
 
   // Update maxEnergy if energyPerDay level changes
   useEffect(() => {
