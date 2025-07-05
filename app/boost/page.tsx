@@ -1,55 +1,55 @@
 "use client"
+"use client"
 
-import { Button } from "@/components/ui/button"
-import { Home, Zap, Users, Target } from "lucide-react"
-import Link from "next/link"
-import BoostCard from "@/components/BoostCard"
 import { useBoostStore } from "@/store/boostStore"
 import { useGameStats } from "@/store/gameStats"
+import { Button } from "@/components/ui/button"
 
 export default function BoostPage() {
+  const { activateBoost, doublePointActive, energyRegenActive } = useBoostStore()
   const { points, setPoints } = useGameStats()
-  const { activateBoost } = useBoostStore()
 
-  const handleBoost = (type: "double" | "regen") => {
+  const handleActivateBoost = (type: "double" | "regen") => {
     if (points < 5000) {
-      alert("Kamu butuh minimal 5000 point untuk aktivasi boost ini.")
+      alert("You need at least 5000 points to activate this boost.")
       return
     }
 
+    // Kurangi 5000 poin tanpa reset
     setPoints(points - 5000)
-    activateBoost(type, type === "double" ? 60 : 90)
-    alert(`${type === "double" ? "Double Points" : "Regen x2"} diaktifkan!`)
+
+    // Aktifkan boost 60 detik
+    activateBoost(type, 60)
   }
 
   return (
-    <div className="min-h-screen bg-cover bg-center bg-no-repeat text-blue-900 relative pb-20" style={{ backgroundImage: "url('/bg-Cloud.png')" }}>
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-cyan-900/20 via-transparent to-transparent z-0"></div>
+    <div className="min-h-screen bg-white text-center p-8">
+      <h1 className="text-2xl font-bold mb-4 text-blue-800">Activate Boost</h1>
 
-      <div className="relative z-10 p-6 pt-20">
-        <h1 className="text-3xl font-bold mb-6 text-center">Boost Center</h1>
+      <div className="space-y-6">
+        <div className="border p-4 rounded shadow">
+          <h2 className="text-xl font-semibold text-blue-700">Double Points</h2>
+          <p className="mb-2 text-gray-600">Doubles points for 60 seconds</p>
+          {doublePointActive ? (
+            <p className="text-green-600 font-bold">Active</p>
+          ) : (
+            <Button onClick={() => handleActivateBoost("double")}>Activate (5000 pts)</Button>
+          )}
+        </div>
 
-        <div className="grid gap-4">
-          <BoostCard
-            title="Double Points"
-            description="Dapatkan 2x poin selama 1 menit."
-            onBoost={() => handleBoost("double")}
-          />
-
-          <BoostCard
-            title="Energy Regen x2"
-            description="Regenerasi energi dua kali lebih cepat selama 1.5 menit."
-            onBoost={() => handleBoost("regen")}
-          />
-
-          <BoostCard
-            title="Auto Tap"
-            description="Otomatis tap cloud selama 1 menit."
-            onBoost={() => alert("Auto Tap belum tersedia.")}
-            disabled
-          />
+        <div className="border p-4 rounded shadow">
+          <h2 className="text-xl font-semibold text-blue-700">Energy Regen</h2>
+          <p className="mb-2 text-gray-600">Faster energy regen for 60 seconds</p>
+          {energyRegenActive ? (
+            <p className="text-green-600 font-bold">Active</p>
+          ) : (
+            <Button onClick={() => handleActivateBoost("regen")}>Activate (5000 pts)</Button>
+          )}
         </div>
       </div>
+    </div>
+  )
+}
 
       {/* Bottom Navigation Bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur-sm border-t border-gray-700 z-20">
