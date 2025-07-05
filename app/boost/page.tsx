@@ -1,10 +1,10 @@
 "use client"
 
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Home, Zap, Target } from "lucide-react"
 import { useBoostStore } from "@/store/boostStore"
 import { useGameStats } from "@/store/gameStats"
+import { Button } from "@/components/ui/button"
+import { Home, Zap, Target } from "lucide-react"
+import Link from "next/link"
 
 export default function BoostPage() {
   const { activateBoost, doublePointActive, energyRegenActive } = useBoostStore()
@@ -16,15 +16,15 @@ export default function BoostPage() {
       return
     }
 
-    // Kurangi 5000 poin tanpa reset
-    setPoints(points - 5000)
+    // Kurangi 5000 poin (tidak diset ke 0)
+    setPoints(prev => prev - 5000)
 
-    // Aktifkan boost 60 detik
+    // Aktifkan boost selama 60 detik
     activateBoost(type, 60)
   }
 
   return (
-    <div className="min-h-screen bg-white text-center pb-24 p-8">
+    <div className="min-h-screen bg-white text-center p-8">
       <h1 className="text-2xl font-bold mb-4 text-blue-800">Activate Boost</h1>
 
       <div className="space-y-6">
@@ -34,7 +34,9 @@ export default function BoostPage() {
           {doublePointActive ? (
             <p className="text-green-600 font-bold">Active</p>
           ) : (
-            <Button onClick={() => handleActivateBoost("double")}>Activate (5000 pts)</Button>
+            <Button onClick={() => handleActivateBoost("double")}>
+              Activate (5000 pts)
+            </Button>
           )}
         </div>
 
@@ -44,12 +46,14 @@ export default function BoostPage() {
           {energyRegenActive ? (
             <p className="text-green-600 font-bold">Active</p>
           ) : (
-            <Button onClick={() => handleActivateBoost("regen")}>Activate (5000 pts)</Button>
+            <Button onClick={() => handleActivateBoost("regen")}>
+              Activate (5000 pts)
+            </Button>
           )}
         </div>
       </div>
 
-      {/* Bottom Navigation Bar */}
+      {/* Bottom Navigation */}
       <div className="fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur-sm border-t border-gray-700 z-20">
         <div className="flex items-center justify-around py-3">
           <Link href="/">
