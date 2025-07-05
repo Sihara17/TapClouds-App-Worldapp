@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Home, Zap, Users, Target, MoreVertical, Sparkles, Gift, Settings } from "lucide-react"
 import Link from "next/link"
-import { useBoostStore } from "@/store/boostStore"
-import { usegameStats } from "@/store/gameStats"
-
+import { useBoostStore } from '@/store/boostStore'
+import { useGameStats } from '@/store/gameStats'
+  
 export default function TapCloud() {
   const liffId = "2007685380-qx5MEZd9"
   const { activeBoost } = useBoostStore()
