@@ -1,17 +1,18 @@
-import { create } from "zustand"
+// src/store/gameStats.ts
+import { create } from 'zustand'
 
-interface GameStatsState {
+type GameStats = {
   points: number
   energy: number
-  setPoints: (value: number) => void
-  addPoints: (value: number) => void
-  setEnergy: (value: number) => void
+  maxEnergy: number
+  setPoints: (pts: number) => void
+  setEnergy: (energy: number) => void
 }
 
-export const useGameStats = create<GameStatsState>((set) => ({
+export const useGameStats = create<GameStats>((set) => ({
   points: 0,
-  energy: 900,
-  setPoints: (value) => set({ points: value }),
-  addPoints: (value) => set((state) => ({ points: state.points + value })),
-  setEnergy: (value) => set({ energy: value }),
+  energy: 900, // ✅ pastikan default 900
+  maxEnergy: 900,
+  setPoints: (pts) => set({ points: pts }),
+  setEnergy: (energy) => set({ energy }),
 }))
