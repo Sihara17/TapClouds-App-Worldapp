@@ -7,6 +7,7 @@ import { Home, Zap, Target, MoreVertical, Sparkles, Gift, Settings } from "lucid
 import Link from "next/link"
 import { useBoostStore } from "@/store/boostStore"
 import { useGameStats } from "@/store/gameStats"
+import { toast } from "sonner"
 
 export default function TapCloud() {
   const liffId = "2007685380-qx5MEZd9"
