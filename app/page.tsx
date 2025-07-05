@@ -44,17 +44,24 @@ export default function TapCloud() {
   let streak = Number(localStorage.getItem("loginStreak") || "0")
 
   if (lastLogin !== today) {
-    // Belum login hari ini
-    streak = lastLogin ? (streak >= 7 ? 1 : streak + 1) : 1
-    const reward = streak * 100
+  streak = lastLogin ? (streak >= 7 ? 1 : streak + 1) : 1
+  const reward = streak * 100
 
-    setPoints((prev) => prev + reward)
-    localStorage.setItem("lastLoginDate", today)
-    localStorage.setItem("loginStreak", streak.toString())
+  setPoints((prev) => prev + reward)
+  localStorage.setItem("lastLoginDate", today)
+  localStorage.setItem("loginStreak", streak.toString())
 
-    alert(`🎉 Daily Login: Hari ke-${streak}!\n+${reward} points!`)
-  }
-})
+  toast.success(`🎉 Daily Login: Hari ke-${streak}`, {
+    description: `+${reward} points`,
+    duration: 4000,
+    className: "text-blue-800 bg-blue-100 border border-blue-300 shadow-xl",
+    style: {
+      borderRadius: "12px",
+      fontWeight: "500",
+    }
+  })
+}
+
 
         }
       }).catch((err) => console.error("LIFF init error:", err))
