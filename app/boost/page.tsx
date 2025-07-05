@@ -1,9 +1,10 @@
 "use client"
-"use client"
 
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Home, Zap, Target } from "lucide-react"
 import { useBoostStore } from "@/store/boostStore"
 import { useGameStats } from "@/store/gameStats"
-import { Button } from "@/components/ui/button"
 
 export default function BoostPage() {
   const { activateBoost, doublePointActive, energyRegenActive } = useBoostStore()
@@ -23,7 +24,7 @@ export default function BoostPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white text-center p-8">
+    <div className="min-h-screen bg-white text-center pb-24 p-8">
       <h1 className="text-2xl font-bold mb-4 text-blue-800">Activate Boost</h1>
 
       <div className="space-y-6">
@@ -47,9 +48,6 @@ export default function BoostPage() {
           )}
         </div>
       </div>
-    </div>
-  )
-}
 
       {/* Bottom Navigation Bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur-sm border-t border-gray-700 z-20">
@@ -66,12 +64,11 @@ export default function BoostPage() {
               <span className="text-xs">Boost</span>
             </Button>
           </Link>
-    
           <Link href="/quest">
-          <Button variant="ghost" className="flex flex-col items-center gap-1 text-gray-400">
-            <Target className="h-6 w-6" />
-            <span className="text-xs">Quest</span>
-          </Button>
+            <Button variant="ghost" className="flex flex-col items-center gap-1 text-gray-400">
+              <Target className="h-6 w-6" />
+              <span className="text-xs">Quest</span>
+            </Button>
           </Link>
         </div>
       </div>
