@@ -67,7 +67,10 @@ export default function TapCloud() {
   // Regen energy
   useEffect(() => {
     const interval = setInterval(() => {
-      setEnergy((prev) => Math.min(maxEnergy, prev + 1))
+      setEnergy((prevEnergy) => {
+        const next = Math.min(maxEnergy, prevEnergy + 1)
+        return next
+      })
     }, energyRegenActive ? 500 : 1000)
     return () => clearInterval(interval)
   }, [energyRegenActive, maxEnergy, setEnergy])
@@ -140,14 +143,13 @@ export default function TapCloud() {
       </div>
 
       {/* Energy */}
-<div className="px-6 mb-6">
-  <div className="flex justify-between mb-2 text-sm text-blue-900">
-    <span>Energy</span>
-    <span className="font-semibold">{safeEnergy} / {maxEnergy}</span>
-  </div>
-  <Progress value={(safeEnergy / maxEnergy) * 100} className="h-2" />
-</div>
-
+      <div className="px-6 mb-6">
+        <div className="flex justify-between mb-2 text-sm text-blue-900">
+          <span>Energy</span>
+          <span className="font-semibold">{safeEnergy} / {maxEnergy}</span>
+        </div>
+        <Progress value={(safeEnergy / maxEnergy) * 100} className="h-2" />
+      </div>
 
       {/* Bottom Nav */}
       <div className="fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur-sm border-t border-gray-700 z-20">
