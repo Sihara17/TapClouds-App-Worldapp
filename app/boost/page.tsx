@@ -72,29 +72,18 @@ export default function BoostPage() {
         )
       })}
 
-      {/* Bottom nav */}
-      <div className="fixed bottom-0 left-0 right-0 bg-gray-900 border-t border-cyan-800">
-        <div className="flex items-center justify-around py-2">
-          <Link href="/">
-            <Button variant="ghost" className="text-gray-400 flex flex-col items-center">
-              <Home className="h-6 w-6" />
-              <span className="text-xs">Home</span>
-            </Button>
-          </Link>
-          <Link href="/boost">
-            <Button variant="ghost" className="text-cyan-400 flex flex-col items-center">
-              <Zap className="h-6 w-6" />
-              <span className="text-xs">Boost</span>
-            </Button>
-          </Link>
-          <Link href="/quest">
-            <Button variant="ghost" className="text-gray-400 flex flex-col items-center">
-              <Target className="h-6 w-6" />
-              <span className="text-xs">Quest</span>
-            </Button>
-          </Link>
-        </div>
-      </div>
+ 
+      <footer className="fixed bottom-0 left-0 right-0 bg-white border-t p-2 flex justify-around">
+        <Link href="/">
+          <Home className="w-6 h-6 text-blue-300" />
+        </Link>
+        <Link href="/boost">
+          <Zap className="w-6 h-6 text-blue-300" />
+        </Link>
+        <Link href="/quest">
+          <Target className="w-6 h-6 text-blue-300" />
+        </Link>
+      </footer>
     </div>
   )
 }
