@@ -84,13 +84,13 @@ export default function TapCloud() {
 
       <div
         onClick={handleTap}
-        className="mx-auto mb-8 w-70 h-70 rounded-full flex items-center justify-center text-lg font-bold shadow-lg active:scale-95 transition-transform relative overflow-hidden"
+        className="mx-auto mb-6 w-70 h-70 rounded-full flex items-center justify-center text-lg font-bold shadow-lg active:scale-95 transition-transform relative overflow-hidden"
         style={{ backgroundImage: "url('/logo1.png')", backgroundSize: "cover", backgroundPosition: "center" }}
       >
         {tapEffects.map(effect => (
           <div
             key={effect.id}
-            className="absolute w-4 h-4 bg-yellow-300 rounded-full animate-ping pointer-events-none"
+            className="absolute w-10 h-10 bg-yellow-300 rounded-full animate-ping pointer-events-none"
             style={{ left: effect.x - 8, top: effect.y - 8 }}
           />
         ))}
