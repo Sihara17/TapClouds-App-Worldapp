@@ -77,8 +77,11 @@ export default function TapCloud() {
   }, [levels.energyPerDay])
 
   return (
-    <div className="min-h-screen bg-blue-100 text-center p-4">
-      <h1 className="text-3xl font-bold mb-2">TapCloud</h1>
+    <div
+  className="min-h-screen text-center p-4 bg-cover bg-center bg-no-repeat"
+  style={{ backgroundImage: "url('/logo1.png')" }}
+>
+<h1 className="text-3xl font-bold mb-2">TapCloud</h1>
       <p className="text-xl font-semibold">
   Points: {points.toFixed(2)}
       </p>
@@ -86,7 +89,7 @@ export default function TapCloud() {
 
       <div
         onClick={handleTap}
-        className="mx-auto mb-6 w-40 h-40 rounded-full flex items-center justify-center text-lg font-bold shadow-lg active:scale-95 transition-transform relative overflow-hidden"
+        className="mx-auto mb-6 w-72 h-72 rounded-full flex items-center justify-center text-lg font-bold shadow-lg active:scale-95 transition-transform relative overflow-hidden"
         style={{ backgroundImage: "url('/logo1.png')", backgroundSize: "cover", backgroundPosition: "center" }}
       >
         {tapEffects.map(effect => (
