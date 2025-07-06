@@ -11,19 +11,19 @@ const boostItems = [
     id: "auto",
     title: "Auto Points",
     unit: "per sec",
-    valuePerLevel: 0.01
+    valuePerLevel: 0.1
   },
   {
     id: "energyPerDay",
     title: "Energy Per Day",
     unit: "max/day",
-    valuePerLevel: 100
+    valuePerLevel: 300
   },
   {
     id: "click",
     title: "Points Per Click",
     unit: "per click",
-    valuePerLevel: 0.1
+    valuePerLevel: 2
   }
 ]
 
