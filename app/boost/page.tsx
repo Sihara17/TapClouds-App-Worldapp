@@ -39,9 +39,8 @@ export default function BoostPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black to-gray-900 text-white px-4 py-6 space-y-6">
-      <h1 className="text-2xl font-bold text-center mb-6 text-cyan-300">Boost Center</h1>
-
+    <div className="min-h-screen bg-cover bg-center bg-no-repeat text-blue-900 p-6 relative"
+      style={{ backgroundImage: "url('/l0go.png')" }}>
       {boostItems.map((item) => {
         const level = levels[item.id as keyof typeof levels]
         const current = (level - 1) * item.valuePerLevel
