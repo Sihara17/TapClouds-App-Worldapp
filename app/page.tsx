@@ -11,8 +11,7 @@ import { useEnergyStore } from "@/store/energyStore"
 
 export default function TapCloud() {
   const liffId = "2007685380-qx5MEZd9"
-
-  const { points, gainPoints, setPoints, level } = useGameStats()
+  const { points, gainPoints } = useGameStats()
   const { energy, setEnergy, maxEnergy, refreshMaxEnergy, resetEnergyIfNewDay } = useEnergyStore()
   const { doublePointActive, levels } = useBoostStore()
 
@@ -21,6 +20,7 @@ export default function TapCloud() {
   const [userName, setUserName] = useState("")
   const [isLoggedIn, setIsLoggedIn] = useState(false)
 
+  // LINE Login
   useEffect(() => {
     import("@line/liff").then((liff) => {
       liff.default.init({ liffId }).then(() => {
@@ -34,16 +34,16 @@ export default function TapCloud() {
     })
   }, [])
 
+  // Auto point dari boost
   useEffect(() => {
     const interval = setInterval(() => {
       const autoPoints = levels.auto * 0.01
-      if (autoPoints > 0) {
-        gainPoints(5) // atau sesuai jumlah
-      }
+      gainPoints(autoPoints)
     }, 1000)
     return () => clearInterval(interval)
   }, [levels.auto])
 
+  // Handle tap
   const handleTap = (event: React.MouseEvent<HTMLDivElement>) => {
     if (energy <= 0) return
 
@@ -55,8 +55,7 @@ export default function TapCloud() {
     const finalPoints = doublePointActive ? basePoints * 2 : basePoints
 
     gainPoints(finalPoints)
-    tryLevelUp()
-    setEnergy(Math.max(0, energy - 1))
+    setEnergy((prev) => Math.max(0, prev - 1))
     setIsAnimating(true)
 
     const newEffect = { id: Date.now(), x, y }
@@ -65,23 +64,10 @@ export default function TapCloud() {
     setTimeout(() => setIsAnimating(false), 200)
   }
 
+  // Reset energy per hari
   useEffect(() => {
-    const checkReset = () => {
-      const lastReset = localStorage.getItem("lastEnergyReset")
-      const today = new Date().toDateString()
-      if (lastReset !== today) {
-        setEnergy(maxEnergy)
-        localStorage.setItem("lastEnergyReset", today)
-      }
-    }
-    checkReset()
-    const interval = setInterval(checkReset, 60000)
-    return () => clearInterval(interval)
-  }, [maxEnergy])
-
-  useEffect(() => {
-    refreshMaxEnergy()
     resetEnergyIfNewDay()
+    refreshMaxEnergy()
   }, [levels.energyPerDay])
 
   const safeEnergy = typeof energy === "number" && !isNaN(energy) ? energy : maxEnergy
@@ -90,6 +76,7 @@ export default function TapCloud() {
     <div className="min-h-screen bg-cover bg-center bg-no-repeat text-blue-900 relative overflow-hidden" style={{ backgroundImage: "url('/bg-Cloud.png')" }}>
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-cyan-900/20 via-transparent to-transparent" />
 
+      {/* Top Bar */}
       <div className="flex items-center justify-between p-4 relative z-10">
         <div className="w-8 h-8" />
         <div className="flex items-center gap-2">
@@ -103,31 +90,25 @@ export default function TapCloud() {
         </Button>
       </div>
 
+      {/* Username & Points */}
       <div className="text-center mb-6">
         <div className="flex justify-center gap-2 mb-4">
           <span className="text-cyan-400 text-lg">@{userName || "..."}</span>
         </div>
-
         <div className="flex justify-center gap-3 mb-2">
           <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg shadow-yellow-500/50">
             <div className="w-8 h-8 bg-gradient-to-br from-yellow-300 to-yellow-600 rounded-full" />
           </div>
-          <span className="text-4xl font-bold text-blue-900">{points.toLocaleString()}</span>
+          <span className="text-4xl font-bold text-blue-900">{Math.floor(points).toLocaleString()}</span>
         </div>
-
         <div className="flex justify-center gap-4 mb-8">
-          <Button size="icon" className="w-12 h-12 bg-cyan-500 hover:bg-cyan-600 rounded-full">
-            <Sparkles className="h-6 w-6" />
-          </Button>
-          <Button size="icon" className="w-12 h-12 bg-cyan-500 hover:bg-cyan-600 rounded-full">
-            <Gift className="h-6 w-6" />
-          </Button>
-          <Button size="icon" className="w-12 h-12 bg-cyan-500 hover:bg-cyan-600 rounded-full">
-            <Settings className="h-6 w-6" />
-          </Button>
+          <Button size="icon" className="w-12 h-12 bg-cyan-500 hover:bg-cyan-600 rounded-full"><Sparkles className="h-6 w-6" /></Button>
+          <Button size="icon" className="w-12 h-12 bg-cyan-500 hover:bg-cyan-600 rounded-full"><Gift className="h-6 w-6" /></Button>
+          <Button size="icon" className="w-12 h-12 bg-cyan-500 hover:bg-cyan-600 rounded-full"><Settings className="h-6 w-6" /></Button>
         </div>
       </div>
 
+      {/* Tap Area */}
       <div className="flex justify-center mb-8 relative">
         <div
           className={`relative cursor-pointer transition-transform duration-200 ${isAnimating ? "scale-95" : "scale-100"}`}
@@ -148,6 +129,7 @@ export default function TapCloud() {
         </div>
       </div>
 
+      {/* Energy */}
       <div className="px-6 mb-6">
         <div className="flex justify-between mb-2 text-sm text-blue-900">
           <span>Energy</span>
@@ -156,24 +138,12 @@ export default function TapCloud() {
         <Progress value={(safeEnergy / maxEnergy) * 100} className="h-2" />
       </div>
 
+      {/* Bottom Nav */}
       <div className="fixed bottom-0 left-0 right-0 bg-gray-900/95 backdrop-blur-sm border-t border-gray-700 z-20">
         <div className="flex items-center justify-around py-3">
-          <Button variant="ghost" className="flex flex-col items-center gap-1 text-cyan-400">
-            <Home className="h-6 w-6" />
-            <span className="text-xs">Home</span>
-          </Button>
-          <Link href="/boost">
-            <Button variant="ghost" className="flex flex-col items-center gap-1 text-gray-400">
-              <Zap className="h-6 w-6" />
-              <span className="text-xs">Boost</span>
-            </Button>
-          </Link>
-          <Link href="/quest">
-            <Button variant="ghost" className="flex flex-col items-center gap-1 text-cyan-400">
-              <Target className="h-6 w-6" />
-              <span className="text-xs">Quest</span>
-            </Button>
-          </Link>
+          <Button variant="ghost" className="flex flex-col items-center gap-1 text-cyan-400"><Home className="h-6 w-6" /><span className="text-xs">Home</span></Button>
+          <Link href="/boost"><Button variant="ghost" className="flex flex-col items-center gap-1 text-gray-400"><Zap className="h-6 w-6" /><span className="text-xs">Boost</span></Button></Link>
+          <Link href="/quest"><Button variant="ghost" className="flex flex-col items-center gap-1 text-cyan-400"><Target className="h-6 w-6" /><span className="text-xs">Quest</span></Button></Link>
         </div>
       </div>
 
