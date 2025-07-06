@@ -85,13 +85,14 @@ export default function TapCloud() {
   <h1 className="text-4xl font-bold mb-6 text-cyan-300 animate-pulse drop-shadow-[0_0_12px_rgba(0,255,255,0.8)]">
     TapCloud
   </h1>
-  <p className="text-cyan-200 font-semibold text-lg drop-shadow-[0_0_6px_rgba(0,255,255,0.5)]">
+  <p className="text-2xl font-bold text-cyan-300 animate-pulse drop-shadow-[0_0_12px_rgba(0,255,255,0.8)]">
     Points: {points.toFixed(2)}
   </p>
   <p className="text-cyan-200 text-base drop-shadow-[0_0_6px_rgba(0,255,255,0.4)]">
     Energy: {energy} / {maxEnergy}
   </p>
 </div>
+
 
       <div
         onClick={handleTap}
