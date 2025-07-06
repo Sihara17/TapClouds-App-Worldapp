@@ -77,12 +77,8 @@ export default function TapCloud() {
   }, [levels.energyPerDay])
 
   return (
-    <div className="relative min-h-screen bg-[url('/bg-stars.jpg')] bg-cover">
-  <div className="absolute inset-0 bg-[url('/cloud-overlay.png')] bg-contain bg-no-repeat opacity-20" />
-  {/* content */}
-</div>
-
- <div className="text-center">
+    <div className="min-h-screen bg-gradient-to-b from-black to-gray-900 text-white px-4 py-6 space-y-6">
+   <div className="text-center">
   <h1 className="text-4xl font-bold mb-6 text-cyan-300 animate-pulse drop-shadow-[0_0_12px_rgba(0,255,255,0.8)]">
     TapCloud
   </h1>
@@ -93,8 +89,6 @@ export default function TapCloud() {
     Energy: {energy} / {maxEnergy}
   </p>
 </div>
-
-
       <div
         onClick={handleTap}
         className="mx-auto mb-6 w-72 h-72 rounded-full flex items-center justify-center text-lg font-bold shadow-lg active:scale-95 transition-transform relative overflow-hidden"
