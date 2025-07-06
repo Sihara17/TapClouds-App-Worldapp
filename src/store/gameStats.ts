@@ -1,64 +1,72 @@
-// src/store/gameStats.ts
-import { create } from 'zustand'
-
-const pointsRequiredPerLevel = [
-  0,      // Level 1
-  1000,   // Level 2
-  3000,   // Level 3
-  5000,   // Level 4
-  10000,  // Level 5
-  20000,  // Level 6
-  30000,  // Level 7
-  45000,  // Level 8
-  60000,  // Level 9
-  90000,  // Level 10
-  110000, // Level 11
-  130000, // Level 12
-  150000, // Level 13
-  170000, // Level 14
-  190000, // Level 15
-  210000, // Level 16
-  230000, // Level 17
-  250000, // Level 18
-  270000, // Level 19
-  290000, // Level 20
-  310000, // Level 21
-  330000, // Level 22
-  350000, // Level 23
-  370000, // Level 24
-  390000, // Level 25
-  410000, // Level 26
-  430000, // Level 27
-  450000, // Level 28
-  470000, // Level 29
-  500000  // Level 30
-  // Up to level 50 bisa dilanjut
-]
+import { create } from "zustand"
 
 type GameStats = {
   points: number
   level: number
-  setPoints: (pts: number) => void
-  gainPoints: (pts: number) => void
+  gainPoints: (amount: number) => void
+  setPoints: (amount: number) => void
   tryLevelUp: () => void
 }
 
 export const useGameStats = create<GameStats>((set, get) => ({
   points: 0,
   level: 1,
-  setPoints: (pts) => set({ points: pts }),
-  gainPoints: (pts) => {
-    const newPoints = get().points + pts
-    set({ points: newPoints })
-  },
-  tryLevelUp: () => {
-    const { level, points } = get()
-    const nextLevel = level + 1
-    const required = pointsRequiredPerLevel[nextLevel]
-    if (!required) return // max level
 
-    if (points >= required) {
-      set({ level: nextLevel, points: points - required })
+  gainPoints: (amount) => {
+    const newPoints = get().points + amount
+    set({ points: newPoints })
+    localStorage.setItem("points", newPoints.toString())
+    get().tryLevelUp()
+  },
+
+  setPoints: (amount) => {
+    set({ points: amount })
+    localStorage.setItem("points", amount.toString())
+  },
+
+  tryLevelUp: () => {
+    const { points, level } = get()
+
+    // Contoh threshold naik level
+    const levelThresholds: Record<number, number> = {
+      1: 1000,
+      2: 3000,
+      3: 6000,
+      4: 10000,
+      5: 15000,
+      6: 21000,
+      7: 28000,
+      8: 36000,
+      9: 45000,
+      10: 55000,
+      // bisa dilanjutkan...
+    }
+
+    const nextLevel = level + 1
+    const nextThreshold = levelThresholds[nextLevel]
+
+    if (nextThreshold && points >= nextThreshold) {
+      set({ level: nextLevel })
+      console.log(`Naik ke level ${nextLevel}!`)
     }
   },
 }))
+
+// Load points dan level dari localStorage saat store dibuat
+if (typeof window !== "undefined") {
+  const storedPoints = parseFloat(localStorage.getItem("points") || "0")
+  const storedLevel = parseInt(localStorage.getItem("level") || "1")
+
+  if (!isNaN(storedPoints)) {
+    useGameStats.setState({ points: storedPoints })
+  }
+
+  if (!isNaN(storedLevel)) {
+    useGameStats.setState({ level: storedLevel })
+  }
+
+  // Simpan level ke localStorage saat berubah
+  useGameStats.subscribe((state) => {
+    localStorage.setItem("level", state.level.toString())
+  })
+}
