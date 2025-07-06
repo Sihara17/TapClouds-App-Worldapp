@@ -82,8 +82,8 @@ export default function TapCloud() {
   style={{ backgroundImage: "url('/logo1.png')" }}
 >
  <h1 className="text-3xl font-bold mb-2 text-blue-500">TapCloud</h1>
-      <p className="text-xl font-semibold">Points: {points.toFixed(2)}</p>
-      <p className="mb-4">Energy: {energy} / {maxEnergy}</p>
+      <p className="text-blue-500 font-semibold">Points: {points.toFixed(2)}</p>
+      <p className="mb-4 text-blue-500">Energy: {energy} / {maxEnergy}</p>
 
       <div
         onClick={handleTap}
