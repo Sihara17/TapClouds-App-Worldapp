@@ -33,7 +33,7 @@ export default function TapCloud() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const autoPoints = levels.auto * 0.1
+      const autoPoints = levels.auto * 0.01
       if (autoPoints > 0) gainPoints(autoPoints)
     }, 1000)
     return () => clearInterval(interval)
