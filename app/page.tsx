@@ -34,7 +34,7 @@ export default function TapCloud() {
   useEffect(() => {
     const interval = setInterval(() => {
       const autoPoints = levels.auto * 0.01
-      if (autoPoints > 0) gainPoints(autoPoints)
+      if (autoPoints > 0) gainPoints(Number(autoPoints.toFixed(2)))
     }, 1000)
     return () => clearInterval(interval)
   }, [levels.auto])
@@ -77,32 +77,27 @@ export default function TapCloud() {
   }, [levels.energyPerDay])
 
   return (
-    <div
-  className="min-h-screen text-center p-4 bg-cover bg-center bg-no-repeat"
-  style={{ backgroundImage: "url('/logo1.png')" }}
->
-<h1 className="text-3xl font-bold mb-2">TapCloud</h1>
-      <p className="text-xl font-semibold">
-  Points: {points.toFixed(2)}
-      </p>
- <p className="mb-4">Energy: {energy} / {maxEnergy}</p>
+    <div className="min-h-screen bg-cover bg-center bg-no-repeat text-center p-4 text-blue-300" style={{ backgroundImage: "url('/bg-Cloud.png')" }}>
+      <h1 className="text-3xl font-bold mb-2 text-blue-500">TapCloud</h1>
+      <p className="text-xl font-semibold">Points: {points.toFixed(2)}</p>
+      <p className="mb-4">Energy: {energy} / {maxEnergy}</p>
 
       <div
         onClick={handleTap}
         className="mx-auto mb-6 w-72 h-72 rounded-full flex items-center justify-center text-lg font-bold shadow-lg active:scale-95 transition-transform relative overflow-hidden"
-        style={{ backgroundImage: "url('/logo1.png')", backgroundSize: "cover", backgroundPosition: "center" }}
+        style={{ backgroundImage: "url('/logo.png')", backgroundSize: "cover", backgroundPosition: "center" }}
       >
         {tapEffects.map(effect => (
           <div
             key={effect.id}
-            className="absolute w-10 h-10 bg-yellow-300 rounded-full animate-ping pointer-events-none"
+            className="absolute w-4 h-4 bg-yellow-300 rounded-full animate-ping pointer-events-none"
             style={{ left: effect.x - 8, top: effect.y - 8 }}
           />
         ))}
       </div>
 
       {isLoggedIn ? (
-        <p className="text-cyan-600 mb-6">@{userName}</p>
+        <p className="text-cyan-400 mb-6">@{userName}</p>
       ) : (
         <Button
           onClick={() => {
@@ -116,13 +111,13 @@ export default function TapCloud() {
 
       <footer className="fixed bottom-0 left-0 right-0 bg-white border-t p-2 flex justify-around">
         <Link href="/">
-          <Home className="w-6 h-6 text-black" />
+          <Home className="w-6 h-6 text-blue-300" />
         </Link>
         <Link href="/boost">
-          <Zap className="w-6 h-6 text-black" />
+          <Zap className="w-6 h-6 text-blue-300" />
         </Link>
         <Link href="/quest">
-          <Target className="w-6 h-6 text-black" />
+          <Target className="w-6 h-6 text-blue-300" />
         </Link>
       </footer>
     </div>
