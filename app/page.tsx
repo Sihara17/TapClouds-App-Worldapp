@@ -77,10 +77,11 @@ export default function TapCloud() {
   }, [levels.energyPerDay])
 
   return (
-    <div
-  className="min-h-screen text-center p-4 bg-cover bg-center bg-no-repeat"
-  style={{ backgroundImage: "url('/logo1.png')" }}
->
+    <div className="relative min-h-screen bg-[url('/bg-stars.jpg')] bg-cover">
+  <div className="absolute inset-0 bg-[url('/cloud-overlay.png')] bg-contain bg-no-repeat opacity-20" />
+  {/* content */}
+</div>
+
  <div className="text-center">
   <h1 className="text-4xl font-bold mb-6 text-cyan-300 animate-pulse drop-shadow-[0_0_12px_rgba(0,255,255,0.8)]">
     TapCloud
