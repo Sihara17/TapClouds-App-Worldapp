@@ -12,7 +12,7 @@ import { useEnergyStore } from "@/store/energyStore"
 export default function TapCloud() {
   const liffId = "2007685380-qx5MEZd9"
 
-  const { points, gainPoints, setPoints, tryLevelUp } = useGameStats()
+  const { points, gainPoints, setPoints, level } = useGameStats()
   const { energy, setEnergy, maxEnergy, refreshMaxEnergy, resetEnergyIfNewDay } = useEnergyStore()
   const { doublePointActive, levels } = useBoostStore()
 
@@ -38,7 +38,7 @@ export default function TapCloud() {
     const interval = setInterval(() => {
       const autoPoints = levels.auto * 0.01
       if (autoPoints > 0) {
-        gainPoints(autoPoints)
+        gainPoints(5) // atau sesuai jumlah
       }
     }, 1000)
     return () => clearInterval(interval)
