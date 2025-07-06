@@ -1,7 +1,8 @@
 // src/store/energyStore.ts
 import { create } from "zustand"
+import { persist } from "zustand/middleware"
 
-// Level ke-maxEnergy mapping
+// Level ke maxEnergy mapping
 const energyPerDayLevels: Record<number, number> = {
   1: 200,
   2: 500,
@@ -18,16 +19,24 @@ type EnergyState = {
   refreshMaxEnergy: () => void
 }
 
-export const useEnergyStore = create<EnergyState>((set) => ({
-  energy: 200,
-  maxEnergy: 200,
-  setEnergy: (value) => set({ energy: value }),
-  refreshMaxEnergy: () => {
-    const level = typeof window !== "undefined"
-      ? parseInt(localStorage.getItem("boostLevel-energyPerDay") || "1")
-      : 1
+export const useEnergyStore = create(
+  persist<EnergyState>(
+    (set, get) => ({
+      energy: 200,
+      maxEnergy: 200,
+      setEnergy: (value) => set({ energy: value }),
+      refreshMaxEnergy: () => {
+        const level = typeof window !== "undefined"
+          ? parseInt(localStorage.getItem("boostLevel-energyPerDay") || "1")
+          : 1
 
-    const newMax = energyPerDayLevels[level] || 200
-    set({ maxEnergy: newMax })
-  },
-}))
+        const newMax = energyPerDayLevels[level] || 200
+        set({ maxEnergy: newMax })
+      },
+    }),
+    {
+      name: "tapcloud-energy", // localStorage key
+      partialize: (state) => ({ energy: state.energy, maxEnergy: state.maxEnergy }),
+    }
+  )
+)
