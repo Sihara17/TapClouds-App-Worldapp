@@ -19,8 +19,7 @@ export default function TapCloud() {
     levels,
   } = useBoostStore()
 
-  const [energy, setEnergy] = useState(maxEnergy)
-  const [isAnimating, setIsAnimating] = useState(false)
+   const [isAnimating, setIsAnimating] = useState(false)
   const [tapEffects, setTapEffects] = useState<Array<{ id: number; x: number; y: number }>>([])
   const [userName, setUserName] = useState("")
   const [isLoggedIn, setIsLoggedIn] = useState(false)
