@@ -79,12 +79,14 @@ export default function TapCloud() {
   return (
     <div className="min-h-screen bg-blue-100 text-center p-4">
       <h1 className="text-3xl font-bold mb-2">TapCloud</h1>
-      <p className="text-xl font-semibold">Points: {Math.floor(points)}</p>
-      <p className="mb-4">Energy: {energy} / {maxEnergy}</p>
+      <p className="text-xl font-semibold">
+  Points: {points.toFixed(2)}
+      </p>
+ <p className="mb-4">Energy: {energy} / {maxEnergy}</p>
 
       <div
         onClick={handleTap}
-        className="mx-auto mb-6 w-70 h-70 rounded-full flex items-center justify-center text-lg font-bold shadow-lg active:scale-95 transition-transform relative overflow-hidden"
+        className="mx-auto mb-6 w-40 h-40 rounded-full flex items-center justify-center text-lg font-bold shadow-lg active:scale-95 transition-transform relative overflow-hidden"
         style={{ backgroundImage: "url('/logo1.png')", backgroundSize: "cover", backgroundPosition: "center" }}
       >
         {tapEffects.map(effect => (
