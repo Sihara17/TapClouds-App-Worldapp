@@ -79,7 +79,7 @@ export default function TapCloud() {
   return (
     <div
   className="min-h-screen text-center p-4 bg-cover bg-center bg-no-repeat"
-  style={{ backgroundImage: "url('/logo1.png')" }}>
+  style={{ backgroundImage: "url('/l0go.png')" }}>
   <div className="text-center">
   <h1 className="text-4xl font-bold mb-6 text-cyan-300 animate-pulse drop-shadow-[0_0_12px_rgba(0,255,255,0.8)]">
     TapCloud
