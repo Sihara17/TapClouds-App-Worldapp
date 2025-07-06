@@ -80,7 +80,8 @@ export default function TapCloud() {
     <div
   className="min-h-screen text-center p-4 bg-cover bg-center bg-no-repeat"
   style={{ backgroundImage: "url('/logo1.png')" }}
->
+   >
+  <div className="text-center">
   <h1 className="text-4xl font-bold mb-6 text-cyan-300 animate-pulse drop-shadow-[0_0_12px_rgba(0,255,255,0.8)]">
     TapCloud
   </h1>
@@ -90,7 +91,7 @@ export default function TapCloud() {
   <p className="text-cyan-200 text-base drop-shadow-[0_0_6px_rgba(0,255,255,0.4)]">
     Energy: {energy} / {maxEnergy}
   </p>
-</div>
+   </div
       <div
         onClick={handleTap}
         className="mx-auto mb-6 w-72 h-72 rounded-full flex items-center justify-center text-lg font-bold shadow-lg active:scale-95 transition-transform relative overflow-hidden"
