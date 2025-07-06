@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Home, Zap, Target, MoreVertical, Sparkles, Gift, Settings } from "lucide-react"
@@ -11,15 +11,11 @@ import { useEnergyStore } from "@/store/energyStore"
 
 export default function TapCloud() {
   const liffId = "2007685380-qx5MEZd9"
+  const { points, gainPoints } = useGameStats()
+  const { energy, maxEnergy, setEnergy, refreshMaxEnergy, resetEnergyIfNewDay, loadEnergyFromStorage } = useEnergyStore()
+  const { doublePointActive, levels } = useBoostStore()
 
-  const { points, setPoints, gainPoints } = useGameStats()
-  const { energy, setEnergy, maxEnergy, refreshMaxEnergy, resetEnergyIfNewDay } = useEnergyStore()
-  const {
-    doublePointActive,
-    levels,
-  } = useBoostStore()
-
-   const [isAnimating, setIsAnimating] = useState(false)
+  const [isAnimating, setIsAnimating] = useState(false)
   const [tapEffects, setTapEffects] = useState<Array<{ id: number; x: number; y: number }>>([])
   const [userName, setUserName] = useState("")
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -38,14 +34,17 @@ export default function TapCloud() {
     })
   }, [])
 
-  // Auto point (based on auto boost)
+  // Load energy from storage and refresh max on mount
   useEffect(() => {
-    const interval = setInterval(() => {
-      const autoPoints = levels.auto * 0.01
-      gainPoints(autoPoints)
-    }, 1000)
-    return () => clearInterval(interval)
-  }, [levels.auto])
+    loadEnergyFromStorage()
+    refreshMaxEnergy()
+    resetEnergyIfNewDay()
+  }, [])
+
+  // Refresh maxEnergy if boost level changes
+  useEffect(() => {
+    refreshMaxEnergy()
+  }, [levels.energyPerDay])
 
   // Handle tap
   const handleTap = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -59,7 +58,7 @@ export default function TapCloud() {
     const finalPoints = doublePointActive ? basePoints * 2 : basePoints
 
     gainPoints(finalPoints)
-    setEnergy((prev) => Math.max(0, prev - 1))
+    setEnergy(Math.max(0, energy - 1))
     setIsAnimating(true)
 
     const newEffect = { id: Date.now(), x, y }
@@ -67,28 +66,6 @@ export default function TapCloud() {
     setTimeout(() => setTapEffects((prev) => prev.filter(e => e.id !== newEffect.id)), 1000)
     setTimeout(() => setIsAnimating(false), 200)
   }
-
-  // Reset energy to max every 00:00
-  useEffect(() => {
-    const checkReset = () => {
-      const lastReset = localStorage.getItem("lastEnergyReset")
-      const today = new Date().toDateString()
-      if (lastReset !== today) {
-        setEnergy(maxEnergy)
-        localStorage.setItem("lastEnergyReset", today)
-      }
-    }
-    checkReset()
-    const interval = setInterval(checkReset, 60000) // check every 1 minute
-    return () => clearInterval(interval)
-  }, [maxEnergy])
-
-  // Update maxEnergy if energyPerDay level changes
-  useEffect(() => {
-  refreshMaxEnergy()
-  resetEnergyIfNewDay()
-}, [levels.energyPerDay])
-
 
   const safeEnergy = typeof energy === "number" && !isNaN(energy) ? energy : maxEnergy
 
@@ -115,14 +92,12 @@ export default function TapCloud() {
         <div className="flex justify-center gap-2 mb-4">
           <span className="text-cyan-400 text-lg">@{userName || "..."}</span>
         </div>
-
         <div className="flex justify-center gap-3 mb-2">
           <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg shadow-yellow-500/50">
             <div className="w-8 h-8 bg-gradient-to-br from-yellow-300 to-yellow-600 rounded-full" />
           </div>
           <span className="text-4xl font-bold text-blue-900">{points.toLocaleString()}</span>
         </div>
-
         <div className="flex justify-center gap-4 mb-8">
           <Button size="icon" className="w-12 h-12 bg-cyan-500 hover:bg-cyan-600 rounded-full">
             <Sparkles className="h-6 w-6" />
@@ -157,7 +132,7 @@ export default function TapCloud() {
         </div>
       </div>
 
-      {/* Energy */}
+      {/* Energy Progress */}
       <div className="px-6 mb-6">
         <div className="flex justify-between mb-2 text-sm text-blue-900">
           <span>Energy</span>
