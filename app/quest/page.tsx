@@ -8,7 +8,7 @@ export default function QuestPage() {
   return (
     <div
       className="min-h-screen bg-cover bg-center bg-no-repeat text-blue-900 p-6 relative"
-      style={{ backgroundImage: "url('/bg-Cloud.png')" }}
+      style={{ backgroundImage: "url('/l0go.png')" }}
     >
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-cyan-900/20 via-transparent to-transparent"></div>
 
