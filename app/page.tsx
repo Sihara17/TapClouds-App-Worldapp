@@ -13,7 +13,7 @@ export default function TapCloud() {
   const liffId = "2007685380-qx5MEZd9"
 
   const { points, setPoints, gainPoints } = useGameStats()
-  const { maxEnergy, refreshMaxEnergy } = useEnergyStore()
+  const { energy, setEnergy, maxEnergy, refreshMaxEnergy, resetEnergyIfNewDay } = useEnergyStore()
   const {
     doublePointActive,
     levels,
@@ -86,8 +86,10 @@ export default function TapCloud() {
 
   // Update maxEnergy if energyPerDay level changes
   useEffect(() => {
-    refreshMaxEnergy()
-  }, [levels.energyPerDay])
+  refreshMaxEnergy()
+  resetEnergyIfNewDay()
+}, [levels.energyPerDay])
+
 
   const safeEnergy = typeof energy === "number" && !isNaN(energy) ? energy : maxEnergy
 
