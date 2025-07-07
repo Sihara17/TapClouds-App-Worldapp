@@ -1,15 +1,14 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
+import { IDKitWidget } from "@worldcoin/minikit-js/react"
 import { Home, Zap, Target } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { useBoostStore } from "@/store/boostStore"
 import { useGameStats } from "@/store/gameStats"
 import { useEnergyStore } from "@/store/energyStore"
 import { supabase } from "@/lib/supabase"
-import { verify } from "@worldcoin/minikit-js"
-
 
 export default function TapCloud() {
   const { points, gainPoints, setPoints } = useGameStats()
@@ -18,19 +17,7 @@ export default function TapCloud() {
 
   const [tapEffects, setTapEffects] = useState<Array<{ id: number; x: number; y: number }>>([])
   const [userId, setUserId] = useState<string | null>(null)
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
 
-  // ⏳ Fetch user data if already logged in
-  useEffect(() => {
-    const storedId = localStorage.getItem("user_id")
-    if (storedId) {
-      setUserId(storedId)
-      fetchUserStats(storedId)
-      setIsLoggedIn(true)
-    }
-  }, [])
-
-  // 🔁 Fetch user stats from /api/me
   const fetchUserStats = async (id: string) => {
     const res = await fetch(`/api/me?user_id=${id}`)
     if (res.ok) {
@@ -40,50 +27,39 @@ export default function TapCloud() {
     }
   }
 
-  // 🔐 World ID Login
-  const handleWorldIdLogin = async () => {
-    try {
-      const result = await verify({
-        app_id: process.env.NEXT_PUBLIC_WLD_APP_ID!, // ✅ Gunakan key dari .env
-        action_id: process.env.NEXT_PUBLIC_WLD_ACTION_NAME || "tapcloud",
-        credential_types: ["orb", "phone"],
-        signal: "",
-      })
+  const handleSuccess = async (result: any) => {
+    const res = await fetch("/api/verify-proof", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(result),
+    })
 
-      if (!result.success) {
-        alert("World ID verification failed!")
-        return
-      }
-
-      const res = await fetch("/api/verify-proof", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: process.env.NEXT_PUBLIC_WLD_ACTION_NAME || "tapcloud",
-          signal: "",
-          merkle_root: result.merkle_root,
-          nullifier_hash: result.nullifier_hash,
-          proof: result.proof,
-          credential_type: result.credential_type,
-        }),
-      })
-
-      const data = await res.json()
-      if (data.userId) {
-        setUserId(data.userId)
-        localStorage.setItem("user_id", data.userId)
-        fetchUserStats(data.userId)
-        setIsLoggedIn(true)
-      } else {
-        alert("Failed to verify user.")
-      }
-    } catch (error) {
-      console.error(error)
+    const data = await res.json()
+    if (data.userId) {
+      setUserId(data.userId)
+      localStorage.setItem("user_id", data.userId)
+      fetchUserStats(data.userId)
+    } else {
       alert("Login failed. Please try again.")
     }
   }
 
-  // 🎯 Handle Tap
+  useEffect(() => {
+    const storedId = localStorage.getItem("user_id")
+    if (storedId) {
+      setUserId(storedId)
+      fetchUserStats(storedId)
+    }
+  }, [])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const autoPoints = levels.auto * 0.01
+      if (autoPoints > 0) gainPoints(Number(autoPoints.toFixed(2)))
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [levels.auto])
+
   const handleTap = async (event: React.MouseEvent<HTMLDivElement>) => {
     if (!userId || energy <= 0) return
 
@@ -112,7 +88,6 @@ export default function TapCloud() {
     setTimeout(() => setTapEffects((prev) => prev.filter((e) => e.id !== newEffect.id)), 1000)
   }
 
-  // 🔋 Daily energy reset
   useEffect(() => {
     const checkReset = () => {
       const lastReset = localStorage.getItem("lastEnergyReset")
@@ -132,32 +107,21 @@ export default function TapCloud() {
     resetEnergyIfNewDay()
   }, [levels.energyPerDay])
 
-  // 🔁 Auto-point
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const autoPoints = levels.auto * 0.01
-      if (autoPoints > 0) gainPoints(Number(autoPoints.toFixed(2)))
-    }, 1000)
-    return () => clearInterval(interval)
-  }, [levels.auto])
-
   return (
     <div className="min-h-screen text-center p-4 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/l0go.png')" }}>
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-6 text-cyan-300 animate-pulse drop-shadow-[0_0_12px_rgba(0,255,255,0.8)]">
-          TapCloud
-        </h1>
-        <p className="text-2xl font-bold text-cyan-300 animate-pulse drop-shadow-[0_0_12px_rgba(0,255,255,0.8)]">
-          Points: {points.toFixed(2)}
-        </p>
-        <p className="text-cyan-200 text-base drop-shadow-[0_0_6px_rgba(0,255,255,0.4)]">
-          Energy: {energy} / {maxEnergy}
-        </p>
-      </div>
+      <h1 className="text-4xl font-bold mb-6 text-cyan-300 animate-pulse drop-shadow-[0_0_12px_rgba(0,255,255,0.8)]">
+        TapCloud
+      </h1>
+      <p className="text-2xl font-bold text-cyan-300 drop-shadow-[0_0_12px_rgba(0,255,255,0.8)]">
+        Points: {points.toFixed(2)}
+      </p>
+      <p className="text-cyan-200 drop-shadow-[0_0_6px_rgba(0,255,255,0.4)]">
+        Energy: {energy} / {maxEnergy}
+      </p>
 
       <div
         onClick={handleTap}
-        className="mx-auto mb-6 w-72 h-72 rounded-full flex items-center justify-center text-lg font-bold shadow-lg active:scale-95 transition-transform relative overflow-hidden"
+        className="mx-auto my-6 w-72 h-72 rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-transform relative overflow-hidden"
         style={{ backgroundImage: "url('/logo1.png')", backgroundSize: "cover", backgroundPosition: "center" }}
       >
         {tapEffects.map((effect) => (
@@ -169,13 +133,20 @@ export default function TapCloud() {
         ))}
       </div>
 
-      {!isLoggedIn && (
-        <Button
-          onClick={handleWorldIdLogin}
-          className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-full mb-6"
+      {!userId && (
+        <IDKitWidget
+          app_id={process.env.NEXT_PUBLIC_WLD_APP_ID!}
+          action={process.env.NEXT_PUBLIC_WLD_ACTION_NAME!}
+          onSuccess={handleSuccess}
+          signal=""
+          credential_types={["orb", "phone"]}
         >
-          Login with World App
-        </Button>
+          {({ open }) => (
+            <Button onClick={open} className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-full mb-6">
+              Login with World App
+            </Button>
+          )}
+        </IDKitWidget>
       )}
 
       <footer className="fixed bottom-0 left-0 right-0 bg-white border-t p-2 flex justify-around">
