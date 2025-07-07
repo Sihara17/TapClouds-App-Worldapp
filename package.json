@@ -39,6 +39,7 @@
     "@radix-ui/react-tooltip": "latest",
     "@supabase/supabase-js": "^2.50.3",
     "@worldcoin/minikit-js": "^1.9.6",
+    "@worldcoin/minikit-react": "^1.9.7",
     "autoprefixer": "^10.4.20",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
