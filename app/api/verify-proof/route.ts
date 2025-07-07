@@ -8,7 +8,7 @@ export async function POST(req: Request) {
     const { merkle_root, nullifier_hash, proof, credential_type, action } = body
 
     const result = await verifyProof({
-      app_id: process.env.WORLD_ID_APP_ID!,
+      app_id: process.env.NEXT_PUBLIC_WLD_APP_ID!, // Gunakan NEXT_PUBLIC agar bisa diakses client juga
       action,
       credential_type,
       nullifier_hash,
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "World ID verification failed" }, { status: 400 })
     }
 
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from("game_stats")
       .select("*")
       .eq("user_id", nullifier_hash)
