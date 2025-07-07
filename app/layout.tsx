@@ -1,8 +1,6 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { Inter } from "next/font/google"
 import "./globals.css"
-import { Toaster } from "sonner"
+import { Inter } from "next/font/google"
+import { MiniKitProvider } from "@worldcoin/minikit-js/react"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -13,23 +11,20 @@ export const metadata: Metadata = {
   generator: "Sihara"
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <head />
       <body className={inter.className}>
-        {children}
-        <Toaster
-          theme="light"
-          position="top-center"
-          richColors
-          duration={4000}
-        />
+        <MiniKitProvider
+          app_id={process.env.NEXT_PUBLIC_WLD_APP_ID!}
+          action={process.env.NEXT_PUBLIC_WLD_ACTION_NAME!}
+          signal=""
+        >
+          {children}
+        </MiniKitProvider>
       </body>
     </html>
   )
 }
+
