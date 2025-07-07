@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Home, Zap, Target } from "lucide-react"
 import Link from "next/link"
@@ -8,73 +8,83 @@ import { useBoostStore } from "@/store/boostStore"
 import { useGameStats } from "@/store/gameStats"
 import { useEnergyStore } from "@/store/energyStore"
 import { supabase } from "@/lib/supabase"
+import { verify } from "@worldcoin/minikit"
 
 export default function TapCloud() {
-  const liffId = "2007685380-qx5MEZd9"
   const { points, gainPoints, setPoints } = useGameStats()
   const { energy, setEnergy, maxEnergy, refreshMaxEnergy, resetEnergyIfNewDay } = useEnergyStore()
   const { doublePointActive, levels } = useBoostStore()
 
   const [tapEffects, setTapEffects] = useState<Array<{ id: number; x: number; y: number }>>([])
+  const [userId, setUserId] = useState<string | null>(null)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [userName, setUserName] = useState("")
-  const [userId, setUserId] = useState("")
 
-  // 🔐 Login LIFF & Fetch user profile
+  // ⏳ Fetch user data if already logged in
   useEffect(() => {
-    import("@line/liff").then((liff) => {
-      liff.default.init({ liffId }).then(() => {
-        if (liff.default.isLoggedIn()) {
-          setIsLoggedIn(true)
-          liff.default.getProfile().then(async (profile) => {
-            setUserName(profile.displayName)
+    const storedId = localStorage.getItem("user_id")
+    if (storedId) {
+      setUserId(storedId)
+      fetchUserStats(storedId)
+      setIsLoggedIn(true)
+    }
+  }, [])
 
-            // 🔄 Kirim ke API Supabase untuk login atau buat user
-            const res = await fetch("/api/liff-login", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                lineUserId: profile.userId,
-                name: profile.displayName,
-                avatar: profile.pictureUrl,
-              }),
-            })
+  // 🔁 Fetch user stats from /api/me
+  const fetchUserStats = async (id: string) => {
+    const res = await fetch(`/api/me?user_id=${id}`)
+    if (res.ok) {
+      const data = await res.json()
+      setPoints(data.points)
+      setEnergy(data.energy)
+    }
+  }
 
-            const data = await res.json()
-            if (data.userId) {
-              setUserId(data.userId)
-              localStorage.setItem("user_id", data.userId)
-
-              // 🔁 Fetch points dari Supabase
-              const { data: stats } = await supabase
-                .from("game_stats")
-                .select("points, energy")
-                .eq("user_id", data.userId)
-                .single()
-
-              if (stats) {
-                setPoints(stats.points)
-                setEnergy(stats.energy)
-              }
-            }
-          })
-        }
+  // 🔐 World ID Login
+  const handleWorldIdLogin = async () => {
+    try {
+      const result = await verify({
+        app_id: process.env.NEXT_PUBLIC_WLD_APP_ID!, // ✅ Gunakan key dari .env
+        action_id: process.env.NEXT_PUBLIC_WLD_ACTION_NAME || "tapcloud",
+        credential_types: ["orb", "phone"],
+        signal: "",
       })
-    })
-  }, [setPoints, setEnergy])
 
-  // ⚡ Auto points per detik
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const autoPoints = levels.auto * 0.01
-      if (autoPoints > 0) gainPoints(Number(autoPoints.toFixed(2)))
-    }, 1000)
-    return () => clearInterval(interval)
-  }, [levels.auto])
+      if (!result.success) {
+        alert("World ID verification failed!")
+        return
+      }
 
-  // 💥 Handle Tap
+      const res = await fetch("/api/verify-proof", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: process.env.NEXT_PUBLIC_WLD_ACTION_NAME || "tapcloud",
+          signal: "",
+          merkle_root: result.merkle_root,
+          nullifier_hash: result.nullifier_hash,
+          proof: result.proof,
+          credential_type: result.credential_type,
+        }),
+      })
+
+      const data = await res.json()
+      if (data.userId) {
+        setUserId(data.userId)
+        localStorage.setItem("user_id", data.userId)
+        fetchUserStats(data.userId)
+        setIsLoggedIn(true)
+      } else {
+        alert("Failed to verify user.")
+      }
+    } catch (error) {
+      console.error(error)
+      alert("Login failed. Please try again.")
+    }
+  }
+
+  // 🎯 Handle Tap
   const handleTap = async (event: React.MouseEvent<HTMLDivElement>) => {
-    if (energy <= 0 || !userId) return
+    if (!userId || energy <= 0) return
 
     const rect = event.currentTarget.getBoundingClientRect()
     const x = event.clientX - rect.left
@@ -86,18 +96,22 @@ export default function TapCloud() {
     gainPoints(finalPoints)
     setEnergy(Math.max(0, energy - 1))
 
-    // 💾 Simpan ke Supabase
     await supabase.from("game_stats").update({
       points: points + finalPoints,
       energy: energy - 1,
     }).eq("user_id", userId)
+
+    await supabase.from("tap_logs").insert({
+      user_id: userId,
+      points: finalPoints,
+    })
 
     const newEffect = { id: Date.now(), x, y }
     setTapEffects((prev) => [...prev, newEffect])
     setTimeout(() => setTapEffects((prev) => prev.filter((e) => e.id !== newEffect.id)), 1000)
   }
 
-  // 🔁 Reset energi harian
+  // 🔋 Daily energy reset
   useEffect(() => {
     const checkReset = () => {
       const lastReset = localStorage.getItem("lastEnergyReset")
@@ -117,11 +131,17 @@ export default function TapCloud() {
     resetEnergyIfNewDay()
   }, [levels.energyPerDay])
 
+  // 🔁 Auto-point
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const autoPoints = levels.auto * 0.01
+      if (autoPoints > 0) gainPoints(Number(autoPoints.toFixed(2)))
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [levels.auto])
+
   return (
-    <div
-      className="min-h-screen text-center p-4 bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: "url('/l0go.png')" }}
-    >
+    <div className="min-h-screen text-center p-4 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/l0go.png')" }}>
       <div className="text-center">
         <h1 className="text-4xl font-bold mb-6 text-cyan-300 animate-pulse drop-shadow-[0_0_12px_rgba(0,255,255,0.8)]">
           TapCloud
@@ -137,11 +157,7 @@ export default function TapCloud() {
       <div
         onClick={handleTap}
         className="mx-auto mb-6 w-72 h-72 rounded-full flex items-center justify-center text-lg font-bold shadow-lg active:scale-95 transition-transform relative overflow-hidden"
-        style={{
-          backgroundImage: "url('/logo1.png')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
+        style={{ backgroundImage: "url('/logo1.png')", backgroundSize: "cover", backgroundPosition: "center" }}
       >
         {tapEffects.map((effect) => (
           <div
@@ -152,16 +168,12 @@ export default function TapCloud() {
         ))}
       </div>
 
-      {isLoggedIn ? (
-        <p className="text-cyan-400 mb-6">@{userName}</p>
-      ) : (
+      {!isLoggedIn && (
         <Button
-          onClick={() => {
-            import("@line/liff").then((liff) => liff.default.login())
-          }}
-          className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-full mb-6"
+          onClick={handleWorldIdLogin}
+          className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-full mb-6"
         >
-          Login with LINE
+          Login with World App
         </Button>
       )}
 
