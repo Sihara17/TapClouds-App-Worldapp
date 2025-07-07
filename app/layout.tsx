@@ -1,15 +1,13 @@
+// app/layout.tsx
 import "./globals.css"
 import { Inter } from "next/font/google"
-import { MiniKitProvider } from "@worldcoin/minikit-react"
-import type { Metadata } from "next"
+import { MiniKitProvider } from "@worldcoin/minikit-react" // ✅ yang benar
 
 const inter = Inter({ subsets: ["latin"] })
 
-export const metadata: Metadata = {
+export const metadata = {
   title: "TapClouds - App",
   description: "Tap to earn points in this engaging clicker game",
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
-  generator: "Ridwan Sihara"
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
