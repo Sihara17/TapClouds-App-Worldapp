@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     } = body
 
     const result = await verifyProof({
-      app_id: process.env.WORLD_ID_APP_ID!, // server-side var (tanpa NEXT_PUBLIC)
+      app_id: process.env.NEXT_PUBLIC_WLD_APP_ID!, // server-side var (tanpa NEXT_PUBLIC)
       action,
       signal: signal || "",
       credential_type,
