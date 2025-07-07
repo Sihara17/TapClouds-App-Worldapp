@@ -1,13 +1,15 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { MiniKit, ResponseEvent } from "@worldcoin/minikit-js"
+import { MiniKit } from "@worldcoin/minikit-js"
+import { ResponseEvent } from "@worldcoin/minikit-js"
 import { Button } from "@/components/ui/button"
+import { Home, Zap, Target } from "lucide-react"
+import Link from "next/link"
 import { useBoostStore } from "@/store/boostStore"
 import { useGameStats } from "@/store/gameStats"
 import { useEnergyStore } from "@/store/energyStore"
-import { Home, Zap, Target } from "lucide-react"
-import Link from "next/link"
+import { supabase } from "@/lib/supabase"
 
 export default function TapCloud() {
   const { points, gainPoints, setPoints } = useGameStats()
@@ -16,35 +18,16 @@ export default function TapCloud() {
 
   const [tapEffects, setTapEffects] = useState<Array<{ id: number; x: number; y: number }>>([])
   const [userId, setUserId] = useState<string | null>(null)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
 
-  const handleVerify = async () => {
-    const { finalPayload } = await MiniKit.verifyAsync({
-      app_id: process.env.NEXT_PUBLIC_WLD_APP_ID!,
-      action: process.env.NEXT_PUBLIC_WLD_ACTION_NAME!,
-      signal: "",
-      credential_types: ["orb", "phone"],
-    })
-
-    if (finalPayload.status === "error") {
-      alert("Login failed. Please try again.")
-      return
+  useEffect(() => {
+    const storedId = localStorage.getItem("user_id")
+    if (storedId) {
+      setUserId(storedId)
+      fetchUserStats(storedId)
+      setIsLoggedIn(true)
     }
-
-    const res = await fetch("/api/verify-proof", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(finalPayload),
-    })
-
-    const data = await res.json()
-    if (data.userId) {
-      setUserId(data.userId)
-      localStorage.setItem("user_id", data.userId)
-      fetchUserStats(data.userId)
-    } else {
-      alert("Login failed.")
-    }
-  }
+  }, [])
 
   const fetchUserStats = async (id: string) => {
     const res = await fetch(`/api/me?user_id=${id}`)
@@ -54,6 +37,46 @@ export default function TapCloud() {
       setEnergy(data.energy)
     }
   }
+
+  const handleWorldIdLogin = async () => {
+    const { finalPayload } = await MiniKit.verifyAsync({
+      action: "tapcloud",
+      signal: "",
+    })
+
+    if (finalPayload.status === "error") {
+      return console.error("World ID verification failed", finalPayload)
+    }
+
+    const verifyRes = await fetch("/api/verify-proof", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "tapcloud",
+        signal: "",
+        nullifier_hash: finalPayload.nullifier_hash,
+        merkle_root: finalPayload.merkle_root,
+        proof: finalPayload.proof,
+        credential_type: finalPayload.credential_type,
+      }),
+    })
+
+    const data = await verifyRes.json()
+    if (data.userId) {
+      setUserId(data.userId)
+      localStorage.setItem("user_id", data.userId)
+      fetchUserStats(data.userId)
+      setIsLoggedIn(true)
+    }
+  }
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const autoPoints = levels.auto * 0.01
+      if (autoPoints > 0) gainPoints(Number(autoPoints.toFixed(2)))
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [levels.auto])
 
   const handleTap = async (event: React.MouseEvent<HTMLDivElement>) => {
     if (!userId || energy <= 0) return
@@ -68,14 +91,14 @@ export default function TapCloud() {
     gainPoints(finalPoints)
     setEnergy(Math.max(0, energy - 1))
 
-    await fetch("/api/me", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        user_id: userId,
-        points: points + finalPoints,
-        energy: energy - 1,
-      }),
+    await supabase.from("game_stats").update({
+      points: points + finalPoints,
+      energy: energy - 1,
+    }).eq("user_id", userId)
+
+    await supabase.from("tap_logs").insert({
+      user_id: userId,
+      points: finalPoints,
     })
 
     const newEffect = { id: Date.now(), x, y }
@@ -84,41 +107,44 @@ export default function TapCloud() {
   }
 
   useEffect(() => {
-    const storedId = localStorage.getItem("user_id")
-    if (storedId) {
-      setUserId(storedId)
-      fetchUserStats(storedId)
+    const today = new Date().toDateString()
+    const lastReset = localStorage.getItem("lastEnergyReset")
+    if (lastReset !== today) {
+      setEnergy(maxEnergy)
+      localStorage.setItem("lastEnergyReset", today)
     }
-  }, [])
+    const interval = setInterval(() => {
+      const now = new Date().toDateString()
+      if (now !== localStorage.getItem("lastEnergyReset")) {
+        setEnergy(maxEnergy)
+        localStorage.setItem("lastEnergyReset", now)
+      }
+    }, 60000)
+    return () => clearInterval(interval)
+  }, [maxEnergy])
 
   useEffect(() => {
     refreshMaxEnergy()
     resetEnergyIfNewDay()
   }, [levels.energyPerDay])
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const autoPoints = levels.auto * 0.01
-      if (autoPoints > 0) gainPoints(Number(autoPoints.toFixed(2)))
-    }, 1000)
-    return () => clearInterval(interval)
-  }, [levels.auto])
-
   return (
     <div className="min-h-screen text-center p-4 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/l0go.png')" }}>
-      <h1 className="text-4xl font-bold mb-6 text-cyan-300 animate-pulse drop-shadow-[0_0_12px_rgba(0,255,255,0.8)]">
-        TapCloud
-      </h1>
-      <p className="text-2xl font-bold text-cyan-300 drop-shadow-[0_0_12px_rgba(0,255,255,0.8)]">
-        Points: {points.toFixed(2)}
-      </p>
-      <p className="text-cyan-200 drop-shadow-[0_0_6px_rgba(0,255,255,0.4)]">
-        Energy: {energy} / {maxEnergy}
-      </p>
+      <div className="text-center">
+        <h1 className="text-4xl font-bold mb-6 text-cyan-300 animate-pulse drop-shadow-[0_0_12px_rgba(0,255,255,0.8)]">
+          TapCloud
+        </h1>
+        <p className="text-2xl font-bold text-cyan-300 animate-pulse drop-shadow-[0_0_12px_rgba(0,255,255,0.8)]">
+          Points: {points.toFixed(2)}
+        </p>
+        <p className="text-cyan-200 text-base drop-shadow-[0_0_6px_rgba(0,255,255,0.4)]">
+          Energy: {energy} / {maxEnergy}
+        </p>
+      </div>
 
       <div
         onClick={handleTap}
-        className="mx-auto my-6 w-72 h-72 rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-transform relative overflow-hidden"
+        className="mx-auto mb-6 w-72 h-72 rounded-full flex items-center justify-center text-lg font-bold shadow-lg active:scale-95 transition-transform relative overflow-hidden"
         style={{ backgroundImage: "url('/logo1.png')", backgroundSize: "cover", backgroundPosition: "center" }}
       >
         {tapEffects.map((effect) => (
@@ -130,16 +156,25 @@ export default function TapCloud() {
         ))}
       </div>
 
-      {!userId && (
-        <Button onClick={handleVerify} className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-full mb-6">
+      {!isLoggedIn && (
+        <Button
+          onClick={handleWorldIdLogin}
+          className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-full mb-6"
+        >
           Login with World App
         </Button>
       )}
 
       <footer className="fixed bottom-0 left-0 right-0 bg-white border-t p-2 flex justify-around">
-        <Link href="/"><Home className="w-6 h-6 text-blue-300" /></Link>
-        <Link href="/boost"><Zap className="w-6 h-6 text-blue-300" /></Link>
-        <Link href="/quest"><Target className="w-6 h-6 text-blue-300" /></Link>
+        <Link href="/">
+          <Home className="w-6 h-6 text-blue-300" />
+        </Link>
+        <Link href="/boost">
+          <Zap className="w-6 h-6 text-blue-300" />
+        </Link>
+        <Link href="/quest">
+          <Target className="w-6 h-6 text-blue-300" />
+        </Link>
       </footer>
     </div>
   )
