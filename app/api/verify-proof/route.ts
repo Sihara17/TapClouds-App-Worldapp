@@ -5,19 +5,11 @@ import { supabase } from "@/lib/supabase"
 export async function POST(req: Request) {
   try {
     const body = await req.json()
-    const {
-      merkle_root,
-      nullifier_hash,
-      proof,
-      credential_type,
-      action,
-      signal,
-    } = body
+    const { merkle_root, nullifier_hash, proof, credential_type, action } = body
 
     const result = await verifyProof({
-      app_id: process.env.NEXT_PUBLIC_WLD_APP_ID!, // server-side var (tanpa NEXT_PUBLIC)
+      app_id: process.env.WORLD_ID_APP_ID!,
       action,
-      signal: signal || "",
       credential_type,
       nullifier_hash,
       merkle_root,
@@ -28,7 +20,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "World ID verification failed" }, { status: 400 })
     }
 
-    // Simpan ke Supabase
     const { data, error } = await supabase
       .from("game_stats")
       .select("*")
@@ -45,7 +36,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ userId: nullifier_hash })
   } catch (err) {
-    console.error("Verify Proof API error:", err)
+    console.error(err)
     return NextResponse.json({ error: "Server error" }, { status: 500 })
   }
 }
