@@ -8,7 +8,8 @@ import { useBoostStore } from "@/store/boostStore"
 import { useGameStats } from "@/store/gameStats"
 import { useEnergyStore } from "@/store/energyStore"
 import { supabase } from "@/lib/supabase"
-import { verify } from "@worldcoin/minikit"
+import { verify } from "@worldcoin/minikit-js"
+
 
 export default function TapCloud() {
   const { points, gainPoints, setPoints } = useGameStats()
