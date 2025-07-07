@@ -1,6 +1,7 @@
 import "./globals.css"
 import { Inter } from "next/font/google"
-import { MiniKitProvider } from "@worldcoin/minikit-js/react"
+import { MiniKitProvider } from "@worldcoin/minikit-react"
+import type { Metadata } from "next"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -8,9 +9,8 @@ export const metadata: Metadata = {
   title: "TapClouds - App",
   description: "Tap to earn points in this engaging clicker game",
   viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
-  generator: "Sihara"
+  generator: "Ridwan Sihara"
 }
-
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -27,4 +27,3 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   )
 }
-
