@@ -1,8 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { MiniKit } from "@worldcoin/minikit-js"
-import { ResponseEvent } from "@worldcoin/minikit-js"
 import { Button } from "@/components/ui/button"
 import { Home, Zap, Target } from "lucide-react"
 import Link from "next/link"
@@ -10,6 +8,7 @@ import { useBoostStore } from "@/store/boostStore"
 import { useGameStats } from "@/store/gameStats"
 import { useEnergyStore } from "@/store/energyStore"
 import { supabase } from "@/lib/supabase"
+import { verify } from "@worldcoin/minikit"
 
 export default function TapCloud() {
   const { points, gainPoints, setPoints } = useGameStats()
@@ -39,34 +38,38 @@ export default function TapCloud() {
   }
 
   const handleWorldIdLogin = async () => {
-    const { finalPayload } = await MiniKit.verifyAsync({
-      action: "tapcloud",
-      signal: "",
-    })
-
-    if (finalPayload.status === "error") {
-      return console.error("World ID verification failed", finalPayload)
-    }
-
-    const verifyRes = await fetch("/api/verify-proof", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        action: "tapcloud",
+    try {
+      const result = await verify({
+        app_id: process.env.NEXT_PUBLIC_WORLD_ID_APP_ID!,
+        action_id: "tapcloud-worldid",
+        credential_types: ["orb", "phone"],
         signal: "",
-        nullifier_hash: finalPayload.nullifier_hash,
-        merkle_root: finalPayload.merkle_root,
-        proof: finalPayload.proof,
-        credential_type: finalPayload.credential_type,
-      }),
-    })
+      })
 
-    const data = await verifyRes.json()
-    if (data.userId) {
-      setUserId(data.userId)
-      localStorage.setItem("user_id", data.userId)
-      fetchUserStats(data.userId)
-      setIsLoggedIn(true)
+      if (result.success) {
+        const res = await fetch("/api/verify-proof", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "tapcloud-worldid",
+            signal: "",
+            merkle_root: result.merkle_root,
+            nullifier_hash: result.nullifier_hash,
+            proof: result.proof,
+            credential_type: result.credential_type,
+          }),
+        })
+
+        const data = await res.json()
+        if (data.userId) {
+          setUserId(data.userId)
+          localStorage.setItem("user_id", data.userId)
+          fetchUserStats(data.userId)
+          setIsLoggedIn(true)
+        }
+      }
+    } catch (error) {
+      alert("Login failed. Try again.")
     }
   }
 
@@ -107,19 +110,16 @@ export default function TapCloud() {
   }
 
   useEffect(() => {
-    const today = new Date().toDateString()
-    const lastReset = localStorage.getItem("lastEnergyReset")
-    if (lastReset !== today) {
-      setEnergy(maxEnergy)
-      localStorage.setItem("lastEnergyReset", today)
-    }
-    const interval = setInterval(() => {
-      const now = new Date().toDateString()
-      if (now !== localStorage.getItem("lastEnergyReset")) {
+    const checkReset = () => {
+      const lastReset = localStorage.getItem("lastEnergyReset")
+      const today = new Date().toDateString()
+      if (lastReset !== today) {
         setEnergy(maxEnergy)
-        localStorage.setItem("lastEnergyReset", now)
+        localStorage.setItem("lastEnergyReset", today)
       }
-    }, 60000)
+    }
+    checkReset()
+    const interval = setInterval(checkReset, 60000)
     return () => clearInterval(interval)
   }, [maxEnergy])
 
